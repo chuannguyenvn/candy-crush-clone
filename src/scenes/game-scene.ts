@@ -100,7 +100,7 @@ export class GameScene extends Phaser.Scene
                 if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1))
                 {
                     this.canMove = false
-                    this.swapTiles()
+                    this.swapTiles(0)
                 }
             }
         }
@@ -110,7 +110,7 @@ export class GameScene extends Phaser.Scene
      * This function will take care of the swapping of the two selected tiles.
      * It will only work, if two tiles have been selected.
      */
-    private swapTiles(): void {
+    private swapTiles(delay: number): void {
         if (this.firstSelectedTile && this.secondSelectedTile)
         {
             // Get the position of the two tiles
@@ -137,8 +137,9 @@ export class GameScene extends Phaser.Scene
                 targets: this.firstSelectedTile,
                 x: this.secondSelectedTile.x,
                 y: this.secondSelectedTile.y,
-                ease: 'Linear',
-                duration: 400,
+                ease: Phaser.Math.Easing.Circular.Out,
+                duration: 200,
+                delay: delay, 
                 repeat: 0,
                 yoyo: false,
             })
@@ -147,8 +148,9 @@ export class GameScene extends Phaser.Scene
                 targets: this.secondSelectedTile,
                 x: this.firstSelectedTile.x,
                 y: this.firstSelectedTile.y,
-                ease: 'Linear',
-                duration: 400,
+                ease: Phaser.Math.Easing.Circular.Out,
+                duration: 200,
+                delay: delay, 
                 repeat: 0,
                 yoyo: false,
                 onComplete: () => {
@@ -185,7 +187,7 @@ export class GameScene extends Phaser.Scene
         else
         {
             // No match so just swap the tiles back to their original position and reset
-            this.swapTiles()
+            this.swapTiles(0)
             this.tileUp()
             this.canMove = true
         }
