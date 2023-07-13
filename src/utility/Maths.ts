@@ -44,7 +44,6 @@ class Maths
         return vector
     }
 
-
     public static lerpVector2(start: Phaser.Math.Vector2, end: Phaser.Math.Vector2, t: number): Phaser.Math.Vector2 {
         const lerpedX = Phaser.Math.Linear(start.x, end.x, t)
         const lerpedY = Phaser.Math.Linear(start.y, end.y, t)
@@ -56,6 +55,12 @@ class Maths
         const t = Phaser.Math.Clamp(distance / totalDistance, 0, 1)
         return Maths.lerpVector2(start, end, t)
     }
+
+    public static inverseLerp(a: number, b: number, value: number): number {
+        if (a === b) return 0
+        return (value - a) / (b - a)
+    }
+
 }
 
 export default Maths

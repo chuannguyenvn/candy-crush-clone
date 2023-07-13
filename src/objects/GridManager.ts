@@ -26,7 +26,7 @@ class GridManager
     private resolveResult: GridResolveResult
     private canMove = false
     
-    private matchesClearedThisMove: number = 0
+    private matchesClearedThisMove: number
 
     constructor(
         scene: Scene,
@@ -64,27 +64,34 @@ class GridManager
         this.stateMachine.changeState(GridState.DROPPING)
     }
 
-    private addRandomItem(xIndex: number, yIndex: number): Tween {
+    private addRandomItem(xIndex: number, yIndex: number): void {
         const randomIndex = Math.floor(Math.random() * this.possibleItemTypes.length)
         const randomItemType = this.possibleItemTypes[randomIndex]
 
         const newTile = new Tile(this.scene, xIndex, yIndex, randomItemType)
         this.grid[yIndex][xIndex] = newTile
 
-        return this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile, newTile.y - this.gridHeight * CONST.TILE_HEIGHT, newTile.y)
+        this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile, newTile.y - this.gridHeight * CONST.TILE_HEIGHT, newTile.y)
     }
 
-    private moveTile(pointer: any, gameobject: any, event: any): void {
+    private moveTile(pointer: any, gameobject: Tile, event: any): void {
         if (this.stateMachine.currentState == GridState.IDLE)
         {
             if (!this.firstSelectedTile)
             {
                 this.firstSelectedTile = gameobject
+                this.firstSelectedTile.playSelectedAnimation()
             }
             else
             {
                 this.secondSelectedTile = gameobject as Tile
 
+                if (this.firstSelectedTile === this.secondSelectedTile)
+                {
+                    this.deselectTiles()
+                    return
+                }
+                
                 const dx = Math.abs(this.firstSelectedTile.xIndex - this.secondSelectedTile.xIndex)
                 const dy = Math.abs(this.firstSelectedTile.yIndex - this.secondSelectedTile.yIndex)
 
@@ -120,22 +127,25 @@ class GridManager
         
         if (swapBack)
         {
-            this.firstSelectedTile = null
-            this.secondSelectedTile = null
-
+            this.deselectTiles()
             this.animationFactory.animateTileSwapping(aTile, bTile)
         }
         else
         {
-            this.firstSelectedTile = bTile
-            this.secondSelectedTile = aTile
-            
             this.animationFactory.animateTileSwapping(aTile, bTile, () => {
                 this.stateMachine.changeState(GridState.CALCULATE)
             })
         }
     }
 
+    private deselectTiles() : void{
+        this.firstSelectedTile?.stopSelectedAnimation()
+        this.secondSelectedTile?.stopSelectedAnimation()
+        
+        this.firstSelectedTile = null
+        this.secondSelectedTile = null
+    }
+    
     private updateResolveResult(): void {
         this.resolveResult = new GridResolveResult(this.grid as Tile[][])
 
@@ -143,8 +153,7 @@ class GridManager
         
         if (this.resolveResult.totalMatches > 0)
         {
-            this.firstSelectedTile = null
-            this.secondSelectedTile = null
+            this.deselectTiles()
             this.stateMachine.changeState(GridState.CLEARING)
         }
         else

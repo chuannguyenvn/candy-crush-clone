@@ -24,7 +24,7 @@ export class Tile extends Phaser.GameObjects.Image
 
         this.x = xIndex * CONST.TILE_WIDTH
         this.y = yIndex * CONST.TILE_HEIGHT
-        
+
         this.tileType = spriteKey
     }
 
@@ -42,6 +42,16 @@ export class Tile extends Phaser.GameObjects.Image
         this.selectedAnimation = this.scene.tweens.chain({
             targets: this,
             tweens: [
+                {
+                    scale: 1.1,
+                    duration: 50,
+                    easel: Phaser.Math.Easing.Circular.Out,
+                },
+                {
+                    scale: 1,
+                    duration: 50,
+                    easel: Phaser.Math.Easing.Circular.Out,
+                },
                 {
                     angle: 10,
                     duration: 250,

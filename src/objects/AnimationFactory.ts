@@ -6,7 +6,7 @@ import GridManager from './GridManager'
 class AnimationFactory
 {
     public static readonly TILE_DROPPING_TIME = 700
-    public static readonly TILE_SWAPPING_TIME = 500
+    public static readonly TILE_SWAPPING_TIME = 400
 
     private scene: Scene
     private gridManager: GridManager
@@ -16,21 +16,43 @@ class AnimationFactory
         this.gridManager = gridManager
     }
 
-    public animateTileDropping(tile: Tile, fromY: number, toY: number, onComplete: (() => void) | null = null): Tween {
+    public animateTileDropping(tile: Tile, fromY: number, toY: number, onComplete: (() => void) | null = null): void {
         tile.y = fromY
 
-        return this.scene.tweens.add({
+        const duration = AnimationFactory.TILE_DROPPING_TIME
+        let prevTime = 0
+        let prevY = 0
+        let velocity = 0
+        
+        this.scene.tweens.add({
             targets: tile,
             y: toY,
-            duration: AnimationFactory.TILE_DROPPING_TIME,
+            duration: duration,
             ease: Phaser.Math.Easing.Bounce.Out,
+            onUpdate: () => {
+                const currentTime = this.scene.time.now
+
+                if (prevTime !== 0)
+                {
+                    const deltaTime = currentTime - prevTime
+                    const deltaY = tile.y - prevY
+                    velocity = deltaY / deltaTime
+                }
+
+                prevTime = currentTime
+                prevY = tile.y
+
+                tile.scaleX = 1 - velocity * 0.12
+                tile.scaleY = 1 + velocity * 0.12
+            },
             onComplete: () => {
                 if (onComplete) onComplete()
             },
         })
     }
 
-    public animateTileSwapping(aTile: Tile, bTile: Tile, onComplete: (() => void) | null = null): Tween[] {
+
+    public animateTileSwapping(aTile: Tile, bTile: Tile, onComplete: (() => void) | null = null): void {
         const tweens: Tween[] = []
         const ease = Phaser.Math.Easing.Cubic.Out
 
@@ -55,8 +77,6 @@ class AnimationFactory
         )
 
         if (onComplete) this.scene.time.delayedCall(AnimationFactory.TILE_SWAPPING_TIME, onComplete)
-
-        return tweens
     }
 
 }
