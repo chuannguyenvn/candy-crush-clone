@@ -17,9 +17,12 @@
     }
 
     public changeState(state: E): void {
-        if (!this.sameStateInvoke && this._currentState === state) return
-        
         console.log(state)
+
+        if (!this.sameStateInvoke && this._currentState === state) return
+        this._currentState = state
+
+        console.log("enter: " + state)
 
         for (let i = 0; i < this.onExitCallbacks.length; i++)
         {
@@ -33,7 +36,6 @@
             this.onEntryCallbacks[i].callback()
         }
 
-        this._currentState = state
     }
 
     public configure(state: E): StateMachine<E> {

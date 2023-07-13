@@ -3,9 +3,12 @@ import { Scene } from 'phaser'
 import { Tile } from './tiles/Tile'
 import { CONST } from '../const/Const'
 import GridManager from './GridManager'
+import Vector2 = Phaser.Math.Vector2
 
 class AnimationFactory
 {
+    public static readonly TILE_DROPPING_TIME = 700
+    
     private scene: Scene
     private gridManager: GridManager
 
@@ -14,14 +17,14 @@ class AnimationFactory
         this.gridManager = gridManager
     }
 
-    public animateTileDropping(tile: Tile): Tween {
-        const finalYPos = tile.y
-        tile.y -= this.gridManager.gridHeight * CONST.TILE_HEIGHT
+    public animateTileDropping(tile: Tile, fromY: number, toY: number): Tween {
+        tile.y = fromY
 
         return this.scene.tweens.add({
             targets: tile,
-            y: finalYPos,
-            duration: 1000,
+            y: toY,
+            duration: AnimationFactory.TILE_DROPPING_TIME,
+            ease: Phaser.Math.Easing.Bounce.Out,
         })
     }
 }

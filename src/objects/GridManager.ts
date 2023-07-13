@@ -42,9 +42,9 @@ class GridManager
         this.scene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.moveTile, this)
 
         this.stateMachine.configure(GridState.SWAPPING).onEntry(() => this.swapTile())
-        this.stateMachine.configure(GridState.CALCULATING).onEntry(() => this.updateResolveResult())
-        this.stateMachine.configure(GridState.CLEARING).onEntry(() => this.removeGroups())
-        this.stateMachine.configure(GridState.DROPPING).onEntry(() => this.drop())
+        this.stateMachine.configure(GridState.CALCULATE).onEntry(() => this.updateResolveResult())
+        this.stateMachine.configure(GridState.CLEARING).onEntry(() => this.clearGroups())
+        this.stateMachine.configure(GridState.DROPPING).onEntry(() => this.fillAndDrop())
 
         this.initGrid()
     }
@@ -59,38 +59,17 @@ class GridManager
             this.grid.push(newRow)
         }
 
-        this.fillGrid()
-    }
-
-    private fillGrid(): void {
-        const timeline = this.scene.add.timeline({})
-        for (let row = 0; row < this.gridHeight; row++)
-        {
-            for (let col = 0; col < this.gridWidth; col++)
-            {
-                if (this.grid[row][col] === null)
-                    timeline.add({
-                        at: 0,
-                        run: () => this.addRandomItem(col, row),
-                    })
-            }
-        }
-
-        timeline.add({
-            at: 1000,
-            run: () => this.stateMachine.changeState(GridState.CALCULATING),
-        })
-
-        timeline.play()
+        this.stateMachine.changeState(GridState.DROPPING)
     }
 
     private addRandomItem(xIndex: number, yIndex: number): Tween {
         const randomIndex = Math.floor(Math.random() * this.possibleItemTypes.length)
         const randomItemType = this.possibleItemTypes[randomIndex]
 
-        this.grid[yIndex][xIndex] = new Tile(this.scene, xIndex, yIndex, randomItemType)
+        const newTile = new Tile(this.scene, xIndex, yIndex, randomItemType)
+        this.grid[yIndex][xIndex] = newTile
 
-        return this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile)
+        return this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile, newTile.y - this.gridHeight * CONST.TILE_HEIGHT, newTile.y)
     }
 
     private moveTile(pointer: any, gameobject: any, event: any): void {
@@ -125,49 +104,21 @@ class GridManager
         this.firstSelectedTile = bTile
         this.secondSelectedTile = aTile
 
-        this.stateMachine.changeState(GridState.CALCULATING)
-    }
-
-    private drop(): void {
-        for (let col = 0; col < this.gridWidth; col++)
-        {
-            let emptySpaces = 0
-
-            for (let row = this.gridHeight - 1; row >= 0; row--)
-            {
-                const tile = this.grid[row][col]
-
-                if (tile === null)
-                {
-                    emptySpaces++
-                }
-                else if (emptySpaces > 0)
-                {
-                    const newRow = row + emptySpaces
-                    tile.yIndex = newRow
-                    tile.y = newRow * CONST.TILE_HEIGHT
-
-                    this.grid[newRow][col] = tile
-                    this.grid[row][col] = null
-                }
-            }
-        }
-
-        this.fillGrid()
+        this.stateMachine.changeState(GridState.CALCULATE)
     }
 
     private updateResolveResult(): void {
         this.resolveResult = new GridResolveResult(this.grid as Tile[][])
 
-        console.log(this.resolveResult.totalMatches)
-
         if (this.resolveResult.totalMatches > 0)
+        {
             this.stateMachine.changeState(GridState.CLEARING)
+        }
         else
             this.stateMachine.changeState(GridState.IDLE)
     }
 
-    private removeGroups(): void {
+    private clearGroups(): void {
         for (const match of this.resolveResult.matchesOfThree)
         {
             for (const tile of match.content)
@@ -211,6 +162,48 @@ class GridManager
         this.stateMachine.changeState(GridState.DROPPING)
     }
 
+    private fillAndDrop(): void {
+        for (let col = 0; col < this.gridWidth; col++)
+        {
+            let emptySpaces = 0
+
+            for (let row = this.gridHeight - 1; row >= 0; row--)
+            {
+                const tile = this.grid[row][col]
+
+                if (tile === null)
+                {
+                    emptySpaces++
+                }
+                else if (emptySpaces > 0)
+                {
+                    const newRow = row + emptySpaces
+                    tile.yIndex = newRow
+                    this.animationFactory.animateTileDropping(tile, tile.y, newRow * CONST.TILE_HEIGHT)
+
+                    this.grid[newRow][col] = tile
+                    this.grid[row][col] = null
+                }
+            }
+        }
+
+        for (let row = 0; row < this.gridHeight; row++)
+        {
+            for (let col = 0; col < this.gridWidth; col++)
+            {
+                {
+                    if (this.grid[row][col] === null)
+                    {
+                        this.addRandomItem(col, row)
+                    }
+                }
+            }
+        }
+
+        this.scene.time.delayedCall(AnimationFactory.TILE_DROPPING_TIME, () => {
+            this.stateMachine.changeState(GridState.CALCULATE)
+        })
+    }
 }
 
 enum GridState
@@ -219,7 +212,7 @@ enum GridState
     IDLE = 'IDLE',
     MOVING = 'MOVING',
     SWAPPING = 'SWAPPING',
-    CALCULATING = 'CALCULATING',
+    CALCULATE = 'CALCULATE',
     CLEARING = 'CLEARING',
     DROPPING = 'DROPPING',
 }
