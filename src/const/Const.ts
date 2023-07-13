@@ -8,7 +8,7 @@ export const CONST = {
     TILE_WIDTH: 64,
     TILE_HEIGHT: 72,
     CANDY_TYPES: [
-        Keys.Sprite.COOKIE_1,
+        // Keys.Sprite.COOKIE_1,
         Keys.Sprite.COOKIE_2,
         Keys.Sprite.CROISSANT,
         // Keys.Sprite.CUPCAKE,

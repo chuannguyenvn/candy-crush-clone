@@ -6,18 +6,45 @@ export class GridResolveResult
     public matchesOfFour: MatchOfFour[] = []
     public matchesOfFiveStraight: MatchOfFiveStraight[] = []
     public matchesOfFiveAngled: MatchOfFiveAngled[] = []
-
-    // ...
+    public totalMatches: number = 0
 
     constructor(grid: Tile[][]) {
-        this.matchesOfFiveStraight = this.findMatchesOfFiveStraight(grid)
         this.matchesOfFiveAngled = this.findMatchesOfFiveAngled(grid)
+        this.matchesOfFiveStraight = this.findMatchesOfFiveStraight(grid)
         this.matchesOfFour = this.findMatchesOfFour(grid)
         this.matchesOfThree = this.findMatchesOfThree(grid)
+
+        this.totalMatches =
+            this.matchesOfThree.length +
+            this.matchesOfFour.length +
+            this.matchesOfFiveStraight.length +
+            this.matchesOfFiveAngled.length
     }
 
     private findMatchesOfThree(grid: Tile[][]): MatchOfThree[] {
         const matches: MatchOfThree[] = []
+
+        // Iterate over each column
+        for (let col = 0; col < grid[0].length; col++)
+        {
+            // Iterate over each row in the column
+            for (let row = 0; row < grid.length - 2; row++)
+            {
+                const tileA = grid[row][col]
+                const tileB = grid[row + 1][col]
+                const tileC = grid[row + 2][col]
+
+                // Check if the tiles can match and have the same type
+                if (
+                    tileA.canMatchWith(tileB) &&
+                    tileB.canMatchWith(tileC)
+                )
+                {
+                    const matchTiles = [tileA, tileB, tileC]
+                    matches.push(new MatchOfThree(matchTiles))
+                }
+            }
+        }
 
         // Iterate over each row
         for (let row = 0; row < grid.length; row++)
@@ -32,26 +59,10 @@ export class GridResolveResult
                 const tileC = currentRow[col + 2]
 
                 // Check if the tiles can match and have the same type
-                if (tileA.canMatchWith(tileB) && tileB.canMatchWith(tileC))
-                {
-                    const matchTiles = [tileA, tileB, tileC]
-                    matches.push(new MatchOfThree(matchTiles))
-                }
-            }
-        }
-
-        // Iterate over each column
-        for (let col = 0; col < grid[0].length; col++)
-        {
-            // Iterate over each row in the column
-            for (let row = 0; row < grid.length - 2; row++)
-            {
-                const tileA = grid[row][col]
-                const tileB = grid[row + 1][col]
-                const tileC = grid[row + 2][col]
-
-                // Check if the tiles can match and have the same type
-                if (tileA.canMatchWith(tileB) && tileB.canMatchWith(tileC))
+                if (
+                    tileA.canMatchWith(tileB) &&
+                    tileB.canMatchWith(tileC)
+                )
                 {
                     const matchTiles = [tileA, tileB, tileC]
                     matches.push(new MatchOfThree(matchTiles))
@@ -64,6 +75,30 @@ export class GridResolveResult
 
     private findMatchesOfFour(grid: Tile[][]): MatchOfFour[] {
         const matches: MatchOfFour[] = []
+
+        // Iterate over each column
+        for (let col = 0; col < grid[0].length; col++)
+        {
+            // Iterate over each row in the column
+            for (let row = 0; row < grid.length - 3; row++)
+            {
+                const tileA = grid[row][col]
+                const tileB = grid[row + 1][col]
+                const tileC = grid[row + 2][col]
+                const tileD = grid[row + 3][col]
+
+                // Check if the tiles can match and have the same type
+                if (
+                    tileA.canMatchWith(tileB) &&
+                    tileB.canMatchWith(tileC) &&
+                    tileC.canMatchWith(tileD)
+                )
+                {
+                    const matchTiles = [tileA, tileB, tileC, tileD]
+                    matches.push(new MatchOfFour(matchTiles))
+                }
+            }
+        }
 
         // Iterate over each row
         for (let row = 0; row < grid.length; row++)
@@ -91,49 +126,23 @@ export class GridResolveResult
             }
         }
 
-        // Iterate over each column
-        for (let col = 0; col < grid[0].length; col++)
-        {
-            // Iterate over each row in the column
-            for (let row = 0; row < grid.length - 3; row++)
-            {
-                const tileA = grid[row][col]
-                const tileB = grid[row + 1][col]
-                const tileC = grid[row + 2][col]
-                const tileD = grid[row + 3][col]
-
-                // Check if the tiles can match and have the same type
-                if (
-                    tileA.canMatchWith(tileB) &&
-                    tileB.canMatchWith(tileC) &&
-                    tileC.canMatchWith(tileD)
-                )
-                {
-                    const matchTiles = [tileA, tileB, tileC, tileD]
-                    matches.push(new MatchOfFour(matchTiles))
-                }
-            }
-        }
-
         return matches
     }
 
     private findMatchesOfFiveStraight(grid: Tile[][]): MatchOfFiveStraight[] {
         const matches: MatchOfFiveStraight[] = []
 
-        // Iterate over each row
-        for (let row = 0; row < grid.length; row++)
+        // Iterate over each column
+        for (let col = 0; col < grid[0].length; col++)
         {
-            const currentRow = grid[row]
-
-            // Iterate over each column in the row
-            for (let col = 0; col < currentRow.length - 4; col++)
+            // Iterate over each row in the column
+            for (let row = 0; row < grid.length - 4; row++)
             {
-                const tileA = currentRow[col]
-                const tileB = currentRow[col + 1]
-                const tileC = currentRow[col + 2]
-                const tileD = currentRow[col + 3]
-                const tileE = currentRow[col + 4]
+                const tileA = grid[row][col]
+                const tileB = grid[row + 1][col]
+                const tileC = grid[row + 2][col]
+                const tileD = grid[row + 3][col]
+                const tileE = grid[row + 4][col]
 
                 // Check if the tiles can match and have the same type
                 if (
@@ -149,17 +158,19 @@ export class GridResolveResult
             }
         }
 
-        // Iterate over each column
-        for (let col = 0; col < grid[0].length; col++)
+        // Iterate over each row
+        for (let row = 0; row < grid.length; row++)
         {
-            // Iterate over each row in the column
-            for (let row = 0; row < grid.length - 4; row++)
+            const currentRow = grid[row]
+
+            // Iterate over each column in the row
+            for (let col = 0; col < currentRow.length - 4; col++)
             {
-                const tileA = grid[row][col]
-                const tileB = grid[row + 1][col]
-                const tileC = grid[row + 2][col]
-                const tileD = grid[row + 3][col]
-                const tileE = grid[row + 4][col]
+                const tileA = currentRow[col]
+                const tileB = currentRow[col + 1]
+                const tileC = currentRow[col + 2]
+                const tileD = currentRow[col + 3]
+                const tileE = currentRow[col + 4]
 
                 // Check if the tiles can match and have the same type
                 if (
@@ -247,7 +258,6 @@ export class GridResolveResult
         return matches
     }
 
-
     // ...
 }
 
@@ -257,7 +267,7 @@ export class MatchOfThree
 
     constructor(content: Tile[]) {
         this.content = content
-        this.content.forEach(tile => tile.isInMatch = true)
+        this.content.forEach((tile) => (tile.isInMatch = true))
     }
 }
 
@@ -267,7 +277,7 @@ export class MatchOfFour
 
     constructor(content: Tile[]) {
         this.content = content
-        this.content.forEach(tile => tile.isInMatch = true)
+        this.content.forEach((tile) => (tile.isInMatch = true))
     }
 }
 
@@ -277,7 +287,7 @@ export class MatchOfFiveAngled
 
     constructor(content: Tile[]) {
         this.content = content
-        this.content.forEach(tile => tile.isInMatch = true)
+        this.content.forEach((tile) => (tile.isInMatch = true))
     }
 }
 
@@ -287,6 +297,6 @@ export class MatchOfFiveStraight
 
     constructor(content: Tile[]) {
         this.content = content
-        this.content.forEach(tile => tile.isInMatch = true)
+        this.content.forEach((tile) => (tile.isInMatch = true))
     }
 }

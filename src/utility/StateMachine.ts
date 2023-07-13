@@ -18,6 +18,8 @@
 
     public changeState(state: E): void {
         if (!this.sameStateInvoke && this._currentState === state) return
+        
+        console.log(state)
 
         for (let i = 0; i < this.onExitCallbacks.length; i++)
         {

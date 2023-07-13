@@ -3,14 +3,18 @@ import { Scene } from 'phaser'
 import { Tile } from './tiles/Tile'
 import StateMachine from '../utility/StateMachine'
 import { GridResolveResult } from './GridResolveResult'
+import { CONST } from '../const/Const'
+import AnimationFactory from './AnimationFactory'
+import Tween = Phaser.Tweens.Tween
 
 class GridManager
 {
     public readonly stateMachine: StateMachine<GridState> = new StateMachine<GridState>(GridState.INITIALIZING)
+    public readonly animationFactory: AnimationFactory
 
     public readonly gridWidth: number
     public readonly gridHeight: number
-    private readonly possibleFoodTypes: Keys.Sprite[]
+    private readonly possibleItemTypes: Keys.Sprite[]
 
     private scene: Scene
 
@@ -18,6 +22,9 @@ class GridManager
 
     private firstSelectedTile: Tile | null
     private secondSelectedTile: Tile | null
+
+    private resolveResult: GridResolveResult
+    private canMove = false
 
     constructor(
         scene: Scene,
@@ -28,9 +35,16 @@ class GridManager
         this.scene = scene
         this.gridWidth = gridWidth
         this.gridHeight = gridHeight
-        this.possibleFoodTypes = possibleFoodTypes
+        this.possibleItemTypes = possibleFoodTypes
 
-        // this.scene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.tileDown, this)
+        this.animationFactory = new AnimationFactory(this.scene, this)
+
+        this.scene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.moveTile, this)
+
+        this.stateMachine.configure(GridState.SWAPPING).onEntry(() => this.swapTile())
+        this.stateMachine.configure(GridState.CALCULATING).onEntry(() => this.updateResolveResult())
+        this.stateMachine.configure(GridState.CLEARING).onEntry(() => this.removeGroups())
+        this.stateMachine.configure(GridState.DROPPING).onEntry(() => this.drop())
 
         this.initGrid()
     }
@@ -45,48 +59,169 @@ class GridManager
             this.grid.push(newRow)
         }
 
+        this.fillGrid()
+    }
+
+    private fillGrid(): void {
+        const timeline = this.scene.add.timeline({})
         for (let row = 0; row < this.gridHeight; row++)
         {
-            for (let col = 0; col < this.gridWidth; col++) this.addRandomFood(row, col)
+            for (let col = 0; col < this.gridWidth; col++)
+            {
+                if (this.grid[row][col] === null)
+                    timeline.add({
+                        at: 0,
+                        run: () => this.addRandomItem(col, row),
+                    })
+            }
         }
 
-        const result = new GridResolveResult(this.grid as Tile[][])
+        timeline.add({
+            at: 1000,
+            run: () => this.stateMachine.changeState(GridState.CALCULATING),
+        })
 
-        for (let i = 0; i < result.matchesOfThree.length; i++)
-        {
-            result.matchesOfThree[i].content.forEach(tile => tile.setTintFill(0xff0000))
-        }
+        timeline.play()
+    }
 
-        for (let i = 0; i < result.matchesOfFour.length; i++)
-        {
-            result.matchesOfFour[i].content.forEach(tile => tile.setTintFill(0x0000ff))
-        }
+    private addRandomItem(xIndex: number, yIndex: number): Tween {
+        const randomIndex = Math.floor(Math.random() * this.possibleItemTypes.length)
+        const randomItemType = this.possibleItemTypes[randomIndex]
 
-        for (let i = 0; i < result.matchesOfFiveAngled.length; i++)
+        this.grid[yIndex][xIndex] = new Tile(this.scene, xIndex, yIndex, randomItemType)
+
+        return this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile)
+    }
+
+    private moveTile(pointer: any, gameobject: any, event: any): void {
+        this.stateMachine.changeState(GridState.MOVING)
+
+        if (this.canMove)
         {
-            result.matchesOfFiveAngled[i].content.forEach(tile => tile.setTintFill(0x00ffff))
-        }
-        
-        for (let i = 0; i < result.matchesOfFiveStraight.length; i++)
-        {
-            result.matchesOfFiveStraight[i].content.forEach(tile => tile.setTintFill(0x00ff00))
+            if (!this.firstSelectedTile)
+            {
+                this.firstSelectedTile = gameobject
+            }
+            else
+            {
+                this.secondSelectedTile = gameobject as Tile
+
+                const dx = Math.abs(this.firstSelectedTile.xIndex - this.secondSelectedTile.xIndex)
+                const dy = Math.abs(this.firstSelectedTile.yIndex - this.secondSelectedTile.yIndex)
+
+                if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1))
+                {
+                    this.canMove = false
+                    this.stateMachine.changeState(GridState.SWAPPING)
+                }
+            }
         }
     }
 
-    private addRandomFood(x: number, y: number): void {
-        const randomIndex = Math.floor(Math.random() * this.possibleFoodTypes.length)
-        const randomFoodType = this.possibleFoodTypes[randomIndex]
+    private swapTile(): void {
+        const aTile = this.firstSelectedTile as Tile
+        const bTile = this.secondSelectedTile as Tile
 
-        this.grid[y][x] = new Tile(this.scene, x, y, randomFoodType)
+        this.firstSelectedTile = bTile
+        this.secondSelectedTile = aTile
+
+        this.stateMachine.changeState(GridState.CALCULATING)
     }
+
+    private drop(): void {
+        for (let col = 0; col < this.gridWidth; col++)
+        {
+            let emptySpaces = 0
+
+            for (let row = this.gridHeight - 1; row >= 0; row--)
+            {
+                const tile = this.grid[row][col]
+
+                if (tile === null)
+                {
+                    emptySpaces++
+                }
+                else if (emptySpaces > 0)
+                {
+                    const newRow = row + emptySpaces
+                    tile.yIndex = newRow
+                    tile.y = newRow * CONST.TILE_HEIGHT
+
+                    this.grid[newRow][col] = tile
+                    this.grid[row][col] = null
+                }
+            }
+        }
+
+        this.fillGrid()
+    }
+
+    private updateResolveResult(): void {
+        this.resolveResult = new GridResolveResult(this.grid as Tile[][])
+
+        console.log(this.resolveResult.totalMatches)
+
+        if (this.resolveResult.totalMatches > 0)
+            this.stateMachine.changeState(GridState.CLEARING)
+        else
+            this.stateMachine.changeState(GridState.IDLE)
+    }
+
+    private removeGroups(): void {
+        for (const match of this.resolveResult.matchesOfThree)
+        {
+            for (const tile of match.content)
+            {
+                const { xIndex, yIndex } = tile
+                this.grid[yIndex][xIndex] = null
+                tile.destroy()
+            }
+        }
+
+        for (const match of this.resolveResult.matchesOfFour)
+        {
+            for (const tile of match.content)
+            {
+                const { xIndex, yIndex } = tile
+                this.grid[yIndex][xIndex] = null
+                tile.destroy()
+            }
+        }
+
+        for (const match of this.resolveResult.matchesOfFiveAngled)
+        {
+            for (const tile of match.content)
+            {
+                const { xIndex, yIndex } = tile
+                this.grid[yIndex][xIndex] = null
+                tile.destroy()
+            }
+        }
+
+        for (const match of this.resolveResult.matchesOfFiveStraight)
+        {
+            for (const tile of match.content)
+            {
+                const { xIndex, yIndex } = tile
+                this.grid[yIndex][xIndex] = null
+                tile.destroy()
+            }
+        }
+
+        this.stateMachine.changeState(GridState.DROPPING)
+    }
+
 }
 
 enum GridState
 {
-    INITIALIZING,
-    IDLE,
-    CLEARING,
-    DROPPING,
+    INITIALIZING = 'INITIALIZING',
+    IDLE = 'IDLE',
+    MOVING = 'MOVING',
+    SWAPPING = 'SWAPPING',
+    CALCULATING = 'CALCULATING',
+    CLEARING = 'CLEARING',
+    DROPPING = 'DROPPING',
 }
 
 export default GridManager
