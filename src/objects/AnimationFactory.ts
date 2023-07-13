@@ -6,7 +6,7 @@ import GridManager from './GridManager'
 class AnimationFactory
 {
     public static readonly TILE_DROPPING_TIME = 700
-    public static readonly TILE_SWAPPING_TIME = 700
+    public static readonly TILE_SWAPPING_TIME = 500
 
     private scene: Scene
     private gridManager: GridManager

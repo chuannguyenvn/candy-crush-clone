@@ -25,6 +25,8 @@ class GridManager
 
     private resolveResult: GridResolveResult
     private canMove = false
+    
+    private matchesClearedThisMove: number = 0
 
     constructor(
         scene: Scene,
@@ -91,14 +93,31 @@ class GridManager
                     this.canMove = false
                     this.stateMachine.changeState(GridState.SWAPPING)
                 }
+                else
+                {
+                    this.firstSelectedTile = null
+                    this.secondSelectedTile = null
+                }
             }
         }
     }
 
     private swapTile(swapBack = false): void {
+        this.matchesClearedThisMove = 0
+        
         const aTile = this.firstSelectedTile as Tile
         const bTile = this.secondSelectedTile as Tile
 
+        this.grid[aTile.yIndex][aTile.xIndex] = bTile
+        this.grid[bTile.yIndex][bTile.xIndex] = aTile
+        
+        const bXIndex = bTile.xIndex
+        const bYIndex = bTile.yIndex
+        bTile.xIndex = aTile.xIndex
+        bTile.yIndex = aTile.yIndex
+        aTile.xIndex = bXIndex
+        aTile.yIndex = bYIndex
+        
         if (swapBack)
         {
             this.firstSelectedTile = null
@@ -115,25 +134,22 @@ class GridManager
                 this.stateMachine.changeState(GridState.CALCULATE)
             })
         }
-
-        const bXIndex = bTile.xIndex
-        const bYIndex = bTile.yIndex
-        bTile.xIndex = aTile.xIndex
-        bTile.yIndex = aTile.yIndex
-        aTile.xIndex = bXIndex
-        aTile.yIndex = bYIndex
     }
 
     private updateResolveResult(): void {
         this.resolveResult = new GridResolveResult(this.grid as Tile[][])
 
+        this.matchesClearedThisMove += this.resolveResult.totalMatches
+        
         if (this.resolveResult.totalMatches > 0)
         {
+            this.firstSelectedTile = null
+            this.secondSelectedTile = null
             this.stateMachine.changeState(GridState.CLEARING)
         }
         else
         {
-            if (this.firstSelectedTile && this.secondSelectedTile) this.swapTile(true)
+            if (this.matchesClearedThisMove === 0) this.swapTile(true)
             this.stateMachine.changeState(GridState.IDLE)
         }
     }
