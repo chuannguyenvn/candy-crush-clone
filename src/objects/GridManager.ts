@@ -73,9 +73,7 @@ class GridManager
     }
 
     private moveTile(pointer: any, gameobject: any, event: any): void {
-        this.stateMachine.changeState(GridState.MOVING)
-
-        if (this.canMove)
+        if (this.stateMachine.currentState == GridState.IDLE)
         {
             if (!this.firstSelectedTile)
             {
@@ -97,14 +95,33 @@ class GridManager
         }
     }
 
-    private swapTile(): void {
+    private swapTile(swapBack = false): void {
         const aTile = this.firstSelectedTile as Tile
         const bTile = this.secondSelectedTile as Tile
 
-        this.firstSelectedTile = bTile
-        this.secondSelectedTile = aTile
+        if (swapBack)
+        {
+            this.firstSelectedTile = null
+            this.secondSelectedTile = null
 
-        this.stateMachine.changeState(GridState.CALCULATE)
+            this.animationFactory.animateTileSwapping(aTile, bTile)
+        }
+        else
+        {
+            this.firstSelectedTile = bTile
+            this.secondSelectedTile = aTile
+            
+            this.animationFactory.animateTileSwapping(aTile, bTile, () => {
+                this.stateMachine.changeState(GridState.CALCULATE)
+            })
+        }
+
+        const bXIndex = bTile.xIndex
+        const bYIndex = bTile.yIndex
+        bTile.xIndex = aTile.xIndex
+        bTile.yIndex = aTile.yIndex
+        aTile.xIndex = bXIndex
+        aTile.yIndex = bYIndex
     }
 
     private updateResolveResult(): void {
@@ -115,7 +132,10 @@ class GridManager
             this.stateMachine.changeState(GridState.CLEARING)
         }
         else
+        {
+            if (this.firstSelectedTile && this.secondSelectedTile) this.swapTile(true)
             this.stateMachine.changeState(GridState.IDLE)
+        }
     }
 
     private clearGroups(): void {
@@ -213,6 +233,7 @@ enum GridState
     MOVING = 'MOVING',
     SWAPPING = 'SWAPPING',
     CALCULATE = 'CALCULATE',
+    MERGING = 'MERGING',
     CLEARING = 'CLEARING',
     DROPPING = 'DROPPING',
 }
