@@ -20,7 +20,6 @@ class NormalTile extends Tile
             scale: 0,
             duration: 500,
             ease: Phaser.Math.Easing.Cubic.Out,
-            onComplete: () => this.destroy(),
         })
 
         this.scene.cameras.main.shake(50, new Vector2(0.003, 0.003))

@@ -19,6 +19,7 @@ export abstract class Tile extends Phaser.GameObjects.Image
 
     constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, xIndex, yIndex, spriteKey)
+        this.scene = scene
         this.scene.add.existing(this)
         this.gridManager = gridManager
 
@@ -48,7 +49,6 @@ export abstract class Tile extends Phaser.GameObjects.Image
             scale: 0,
             duration: 500,
             ease: Phaser.Math.Easing.Cubic.Out,
-            onComplete: () => this.destroy(),
         })
     }
 

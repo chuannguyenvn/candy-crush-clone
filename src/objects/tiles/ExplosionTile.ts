@@ -16,19 +16,14 @@ class ExplosionTile extends Tile
     public override async resolve(): Promise<void> {
         super.resolve()
 
-        this.gridManager.getTileByOffset(this, -1, -1)?.resolve()
-        this.gridManager.getTileByOffset(this, -1, 0)?.resolve()
-        this.gridManager.getTileByOffset(this, -1, 1)?.resolve()
-        this.gridManager.getTileByOffset(this, 0, -1)?.resolve()
-        this.gridManager.getTileByOffset(this, 0, 1)?.resolve()
-        this.gridManager.getTileByOffset(this, 1, -1)?.resolve()
-        this.gridManager.getTileByOffset(this, 1, 0)?.resolve()
-        this.gridManager.getTileByOffset(this, 1, 1)?.resolve()
-    }
-
-    update() {
-        this.fireImage.x = this.x
-        this.fireImage.y = this.y
+        await this.gridManager.getTileByOffset(this, -1, -1)?.resolve()
+        await this.gridManager.getTileByOffset(this, -1, 0)?.resolve()
+        await this.gridManager.getTileByOffset(this, -1, 1)?.resolve()
+        await this.gridManager.getTileByOffset(this, 0, -1)?.resolve()
+        await this.gridManager.getTileByOffset(this, 0, 1)?.resolve()
+        await this.gridManager.getTileByOffset(this, 1, -1)?.resolve()
+        await this.gridManager.getTileByOffset(this, 1, 0)?.resolve()
+        await this.gridManager.getTileByOffset(this, 1, 1)?.resolve()
     }
 }
 

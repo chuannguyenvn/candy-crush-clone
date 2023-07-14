@@ -21,7 +21,7 @@ class ClearTile extends Tile
                 {
                     for (let col = 0; col < this.gridManager.gridWidth; col++)
                     {
-                        this.gridManager.grid[row][col]?.resolve()
+                        await this.gridManager.grid[row][col]?.resolve()
                     }
                 }
             }
@@ -36,7 +36,7 @@ class ClearTile extends Tile
             for (let col = 0; col < this.gridManager.gridWidth; col++)
             {
                 if (this.gridManager.grid[row][col]?.tileType === tileTile)
-                    this.gridManager.grid[row][col]?.resolve()
+                    await this.gridManager.grid[row][col]?.resolve()
             }
         }
     }
