@@ -20,6 +20,7 @@ export class Tile extends Phaser.GameObjects.Image
         this.scene.add.existing(this)
 
         this.setOrigin(0.5)
+        this.setDisplaySize(CONST.TILE_WIDTH, CONST.TILE_HEIGHT)
         this.setInteractive()
 
         this.xIndex = xIndex

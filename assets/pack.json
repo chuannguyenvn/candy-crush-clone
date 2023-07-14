@@ -60,6 +60,31 @@
         "type": "image",
         "key": "starcookie2",
         "url": "./assets/images/starcookie2.png"
+      },
+      {
+        "type": "image",
+        "key": "avocado",
+        "url": "./assets/images/avocado_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "banana",
+        "url": "./assets/images/banana_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "chestnut",
+        "url": "./assets/images/chestnut_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "grapes",
+        "url": "./assets/images/grapes_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "strawberry",
+        "url": "./assets/images/strawberry_3d.png"
       }
     ]
   }

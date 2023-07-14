@@ -5,7 +5,7 @@ import GridManager from './GridManager'
 
 class AnimationFactory
 {
-    public static readonly TILE_DROPPING_STRETCHING_CONSTANT = 0.12
+    public static readonly TILE_DROPPING_STRETCHING_CONSTANT = 0.15
     public static readonly TILE_DROPPING_TIME = 700
     public static readonly TILE_SWAPPING_TIME = 300
     public static readonly TILE_SWAPPING_STRETCHING_SCALE_TARGET = 1.3
@@ -135,20 +135,6 @@ class AnimationFactory
 
         if (onComplete) this.scene.time.delayedCall(AnimationFactory.TILE_SWAPPING_TIME, onComplete)
     }
-
-    private bellCurveEasing(x: number): number {
-        const bellShape = 0.5 // Controls the shape of the bell curve
-
-        if (x <= 0.5)
-        {
-            return Math.pow(2 * x, bellShape) / 2
-        }
-        else
-        {
-            return 1 - Math.pow(2 * (1 - x), bellShape) / 2
-        }
-    }
-
 }
 
 export default AnimationFactory
