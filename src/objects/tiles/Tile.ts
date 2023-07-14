@@ -38,7 +38,15 @@ export class Tile extends Phaser.GameObjects.Image
     }
 
     public resolve(): void {
-
+        this.scene.add.particles(this.x, this.y, this.tileType, {
+            lifespan: 500,
+            speed: { min: 100, max: 200 },
+            scale: { start: 1, end: 0, ease: Phaser.Math.Easing.Cubic.Out },
+            rotate: { start: 0, min: 0, max: 360 },
+            gravityY: 200,
+            emitting: false,
+        }).explode(5)
+        this.destroy()
     }
 
     public playSelectedAnimation(): void {

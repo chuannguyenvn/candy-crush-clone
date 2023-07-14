@@ -146,11 +146,11 @@ class GridManager
         if (swapBack)
         {
             this.deselectTiles()
-            this.animationFactory.animateTileSwapping(aTile, bTile)
+            this.animationFactory.animateTileSwapping(aTile, bTile, true)
         }
         else
         {
-            this.animationFactory.animateTileSwapping(aTile, bTile, () => {
+            this.animationFactory.animateTileSwapping(aTile, bTile, false, () => {
                 this.stateMachine.changeState(GridState.CALCULATE)
             })
         }
@@ -188,7 +188,7 @@ class GridManager
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.destroy()
+                tile.resolve()
             }
         }
 
@@ -198,7 +198,7 @@ class GridManager
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.destroy()
+                tile.resolve()
             }
         }
 
@@ -208,7 +208,7 @@ class GridManager
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.destroy()
+                tile.resolve()
             }
         }
 
@@ -218,7 +218,7 @@ class GridManager
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.destroy()
+                tile.resolve()
             }
         }
 
