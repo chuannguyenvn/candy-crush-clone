@@ -4,20 +4,23 @@ import { Scene } from 'phaser'
 import Keys from '../../const/Keys'
 import { CONST } from '../../const/Const'
 import AnimationFactory from '../AnimationFactory'
+import GridManager from '../GridManager'
 
-export class Tile extends Phaser.GameObjects.Image
+export abstract class Tile extends Phaser.GameObjects.Image
 {
     public xIndex: number
     public yIndex: number
     public tileType: string
     public isInMatch = false
-    private selectedAnimation: Tween | TweenChain
-    private wakeAnimation: Tween | TweenChain
-    private hintAnimation: Tween | TweenChain
+    protected selectedAnimation: Tween | TweenChain
+    protected wakeAnimation: Tween | TweenChain
+    protected hintAnimation: Tween | TweenChain
+    protected gridManager: GridManager
 
-    constructor(scene: Scene, xIndex: number, yIndex: number, spriteKey: Keys.Sprite) {
+    constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, xIndex, yIndex, spriteKey)
         this.scene.add.existing(this)
+        this.gridManager = gridManager
 
         this.setOrigin(0.5)
         this.setDisplaySize(CONST.TILE_WIDTH, CONST.TILE_HEIGHT)
@@ -38,14 +41,7 @@ export class Tile extends Phaser.GameObjects.Image
     }
 
     public async resolve(): Promise<void> {
-        const emmiter = this.scene.add.particles(this.x, this.y, this.tileType, {
-            lifespan: 500,
-            speed: { min: 100, max: 200 },
-            scale: { start: 1, end: 0, ease: Phaser.Math.Easing.Cubic.Out },
-            rotate: { start: 0, min: 0, max: 360 },
-            gravityY: 200,
-            emitting: false,
-        }).explode(5)
+        this.gridManager.grid[this.yIndex][this.xIndex] = null
 
         this.scene.tweens.add({
             targets: this,
@@ -53,12 +49,6 @@ export class Tile extends Phaser.GameObjects.Image
             duration: 500,
             ease: Phaser.Math.Easing.Cubic.Out,
             onComplete: () => this.destroy(),
-        })
-
-        await new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve()
-            }, 50)
         })
     }
 

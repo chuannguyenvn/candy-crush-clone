@@ -85,6 +85,21 @@
         "type": "image",
         "key": "strawberry",
         "url": "./assets/images/strawberry_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "fire",
+        "url": "./assets/images/fire_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "bolt",
+        "url": "./assets/images/high_voltage_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "star",
+        "url": "./assets/images/star_3d.png"
       }
     ]
   }

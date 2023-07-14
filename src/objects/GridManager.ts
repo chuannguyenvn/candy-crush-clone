@@ -5,8 +5,11 @@ import StateMachine from '../utility/StateMachine'
 import { GridResolveResult } from './GridResolveResult'
 import { CONST } from '../const/Const'
 import AnimationFactory from './AnimationFactory'
-import TimerEvent = Phaser.Time.TimerEvent
 import Utility from '../utility/Utility'
+import NormalTile from './tiles/NormalTile'
+import ExplosionTile from './tiles/ExplosionTile'
+import ClearTile from './tiles/ClearTile'
+import TimerEvent = Phaser.Time.TimerEvent
 
 class GridManager
 {
@@ -19,10 +22,10 @@ class GridManager
 
     private scene: Scene
 
-    private grid: (Tile | null)[][]
+    public grid: (Tile | null)[][]
 
-    private firstSelectedTile: Tile | null
-    private secondSelectedTile: Tile | null
+    public firstSelectedTile: Tile | null
+    public secondSelectedTile: Tile | null
 
     private resolveResult: GridResolveResult
     private canMove = false
@@ -89,7 +92,7 @@ class GridManager
         const randomIndex = Math.floor(Math.random() * this.possibleItemTypes.length)
         const randomItemType = this.possibleItemTypes[randomIndex]
 
-        const newTile = new Tile(this.scene, xIndex, yIndex, randomItemType)
+        const newTile = new NormalTile(this.scene, this, xIndex, yIndex, randomItemType)
         this.grid[yIndex][xIndex] = newTile
 
         this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile, newTile.y - this.gridHeight * CONST.TILE_HEIGHT, newTile.y)
@@ -174,9 +177,8 @@ class GridManager
 
         this.matchesClearedThisMove += this.resolveResult.totalMatches
 
-        if (this.resolveResult.totalMatches > 0)
+        if (this.resolveResult.totalMatches > 0 || this.firstSelectedTile?.tileType === Keys.Sprite.STAR || this.secondSelectedTile?.tileType === Keys.Sprite.STAR)
         {
-            this.deselectTiles()
             this.stateMachine.changeState(GridState.CLEARING)
         }
         else
@@ -187,48 +189,56 @@ class GridManager
     }
 
     private async clearGroups(): Promise<void> {
+        if (this.firstSelectedTile?.tileType === Keys.Sprite.STAR)
+        {
+           await this.firstSelectedTile.resolve()
+        }
+        if (this.secondSelectedTile?.tileType === Keys.Sprite.STAR)
+        {
+            await this.secondSelectedTile.resolve()
+        }
 
         for (const match of this.resolveResult.matchesOfFiveStraight)
         {
             for (const tile of match.content)
             {
-                const { xIndex, yIndex } = tile
-                this.grid[yIndex][xIndex] = null
                 await tile.resolve()
             }
+
+            const chosenTile = match.content[2]
+            const clearTile = new ClearTile(this.scene, this, chosenTile.xIndex, chosenTile.yIndex)
+            this.grid[chosenTile.yIndex][chosenTile.xIndex] = clearTile
         }
 
         for (const match of this.resolveResult.matchesOfFiveAngled)
         {
             for (const tile of match.content)
             {
-                const { xIndex, yIndex } = tile
-                this.grid[yIndex][xIndex] = null
                 await tile.resolve()
             }
         }
-        
+
         for (const match of this.resolveResult.matchesOfFour)
         {
             for (const tile of match.content)
             {
-                const { xIndex, yIndex } = tile
-                this.grid[yIndex][xIndex] = null
                 await tile.resolve()
             }
+
+            const chosenTile = Utility.getRandomElement(match.content)
+            const explosionTile = new ExplosionTile(this.scene, this, chosenTile.xIndex, chosenTile.yIndex, chosenTile.tileType)
+            this.grid[chosenTile.yIndex][chosenTile.xIndex] = explosionTile
         }
 
         for (const match of this.resolveResult.matchesOfThree)
         {
             for (const tile of match.content)
             {
-                const { xIndex, yIndex } = tile
-                this.grid[yIndex][xIndex] = null
                 await tile.resolve()
             }
-            
         }
 
+        this.deselectTiles()
         this.stateMachine.changeState(GridState.DROPPING)
     }
 
@@ -419,6 +429,17 @@ class GridManager
         return null
     }
 
+    public getTileByOffset(tile: Tile, xOffset: number, yOffset: number): Tile | null {
+        const newX = tile.xIndex + xOffset
+        const newY = tile.yIndex + yOffset
+
+        if (newY < 0 || newY >= this.gridHeight || newX < 0 || newX >= this.gridWidth)
+        {
+            return null
+        }
+
+        return (this.grid[newY][newX] as Tile)
+    }
 
     private getTileTypeByOffset(tile: Tile, xOffset: number, yOffset: number): string | null {
         const newX = tile.xIndex + xOffset

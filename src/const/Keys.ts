@@ -25,6 +25,9 @@
         CHESTNUT = 'chestnut',
         GRAPES = 'grapes',
         STRAWBERRY = 'strawberry',
+        FIRE = 'fire',
+        BOLT = 'bolt',
+        STAR = 'star',
     }
 
 
