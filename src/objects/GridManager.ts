@@ -5,7 +5,7 @@ import StateMachine from '../utility/StateMachine'
 import { GridResolveResult } from './GridResolveResult'
 import { CONST } from '../const/Const'
 import AnimationFactory from './AnimationFactory'
-import Tween = Phaser.Tweens.Tween
+import TimerEvent = Phaser.Time.TimerEvent
 
 class GridManager
 {
@@ -25,8 +25,10 @@ class GridManager
 
     private resolveResult: GridResolveResult
     private canMove = false
-    
+
     private matchesClearedThisMove: number
+
+    private wakeUpTimer: TimerEvent
 
     constructor(
         scene: Scene,
@@ -43,10 +45,24 @@ class GridManager
 
         this.scene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.moveTile, this)
 
-        this.stateMachine.configure(GridState.SWAPPING).onEntry(() => this.swapTile())
-        this.stateMachine.configure(GridState.CALCULATE).onEntry(() => this.updateResolveResult())
-        this.stateMachine.configure(GridState.CLEARING).onEntry(() => this.clearGroups())
-        this.stateMachine.configure(GridState.DROPPING).onEntry(() => this.fillAndDrop())
+        this.stateMachine.configure(GridState.SWAPPING).onEntry(() => {
+            this.swapTile()
+            this.resetWakeTimer()
+        })
+        this.stateMachine.configure(GridState.CALCULATE).onEntry(() => {
+            this.updateResolveResult()
+            this.resetWakeTimer()
+        })
+        this.stateMachine.configure(GridState.CLEARING).onEntry(() => {
+            this.clearGroups()
+            this.resetWakeTimer()
+        })
+        this.stateMachine.configure(GridState.DROPPING).onEntry(() => {
+            this.fillAndDrop()
+            this.resetWakeTimer()
+        })
+
+        this.resetWakeTimer()
 
         this.initGrid()
     }
@@ -91,7 +107,7 @@ class GridManager
                     this.deselectTiles()
                     return
                 }
-                
+
                 const dx = Math.abs(this.firstSelectedTile.xIndex - this.secondSelectedTile.xIndex)
                 const dy = Math.abs(this.firstSelectedTile.yIndex - this.secondSelectedTile.yIndex)
 
@@ -106,25 +122,27 @@ class GridManager
                     this.secondSelectedTile = null
                 }
             }
+
+            this.wakeUpTimer.reset({})
         }
     }
 
     private swapTile(swapBack = false): void {
         this.matchesClearedThisMove = 0
-        
+
         const aTile = this.firstSelectedTile as Tile
         const bTile = this.secondSelectedTile as Tile
 
         this.grid[aTile.yIndex][aTile.xIndex] = bTile
         this.grid[bTile.yIndex][bTile.xIndex] = aTile
-        
+
         const bXIndex = bTile.xIndex
         const bYIndex = bTile.yIndex
         bTile.xIndex = aTile.xIndex
         bTile.yIndex = aTile.yIndex
         aTile.xIndex = bXIndex
         aTile.yIndex = bYIndex
-        
+
         if (swapBack)
         {
             this.deselectTiles()
@@ -138,19 +156,19 @@ class GridManager
         }
     }
 
-    private deselectTiles() : void{
+    private deselectTiles(): void {
         this.firstSelectedTile?.stopSelectedAnimation()
         this.secondSelectedTile?.stopSelectedAnimation()
-        
+
         this.firstSelectedTile = null
         this.secondSelectedTile = null
     }
-    
+
     private updateResolveResult(): void {
         this.resolveResult = new GridResolveResult(this.grid as Tile[][])
 
         this.matchesClearedThisMove += this.resolveResult.totalMatches
-        
+
         if (this.resolveResult.totalMatches > 0)
         {
             this.deselectTiles()
@@ -236,11 +254,9 @@ class GridManager
         {
             for (let col = 0; col < this.gridWidth; col++)
             {
+                if (this.grid[row][col] === null)
                 {
-                    if (this.grid[row][col] === null)
-                    {
-                        this.addRandomItem(col, row)
-                    }
+                    this.addRandomItem(col, row)
                 }
             }
         }
@@ -248,6 +264,129 @@ class GridManager
         this.scene.time.delayedCall(AnimationFactory.TILE_DROPPING_TIME, () => {
             this.stateMachine.changeState(GridState.CALCULATE)
         })
+    }
+
+    private resetWakeTimer(): void {
+        this.wakeUpTimer?.destroy()
+        this.wakeUpTimer = this.scene.time.addEvent({
+            delay: 3000,
+            callback: () => {
+                this.grid[Phaser.Math.Between(0, this.gridWidth - 1)][Phaser.Math.Between(0, this.gridHeight - 1)]?.playWakeAnimation()
+                this.resetWakeTimer()
+            },
+        })
+    }
+
+    public findPotentialMatch(): number[] | null {
+        for (let row = 0; row < this.gridHeight; row++)
+        {
+            for (let col = 0; col < this.gridWidth; col++)
+            {
+                const currentTile = this.grid[row][col] as Tile
+
+                if (this.getTileTypeByOffset(currentTile, -1, -1) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, -2, -1) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, -1) == currentTile.tileType)
+                    {
+                        return [row, col, 0, -1]
+                    }
+                    if (this.getTileTypeByOffset(currentTile, -1, -2) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, 1) == currentTile.tileType)
+                    {
+                        return [row, col, -1, 0]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, 1, -1) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, 2, -1) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, -1) == currentTile.tileType)
+                    {
+                        return [row, col, 0, -1]
+                    }
+                    if (this.getTileTypeByOffset(currentTile, 1, -2) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, 1) == currentTile.tileType)
+                    {
+                        return [row, col, 1, 0]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, 1, 1) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, 2, 1) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, 1) == currentTile.tileType)
+                    {
+                        return [row, col, 0, 1]
+                    }
+                    if (this.getTileTypeByOffset(currentTile, 1, 2) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, -1) == currentTile.tileType)
+                    {
+                        return [row, col, 1, 0]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, -1, 1) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, -2, 1) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, 1) == currentTile.tileType)
+                    {
+                        return [row, col, 0, 1]
+                    }
+                    if (this.getTileTypeByOffset(currentTile, -1, 2) == currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, -1) == currentTile.tileType)
+                    {
+                        return [row, col, -1, 0]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, 0, -2) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, 0, -3) == currentTile.tileType)
+                    {
+                        return [row, col, 0, -1]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, 0, 2) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, 0, 3) == currentTile.tileType)
+                    {
+                        return [row, col, 0, 1]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, -2, 0) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, -3, 0) == currentTile.tileType)
+                    {
+                        return [row, col, -1, 0]
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, 2, 0) == currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, 3, 0) == currentTile.tileType)
+                    {
+                        return [row, col, 1, 0]
+                    }
+                }
+            }
+        }
+
+        return null
+    }
+
+    private getTileTypeByOffset(tile: Tile, rowOffset: number, colOffset: number): string | null {
+        const newRow = tile.yIndex + rowOffset
+        const newCol = tile.xIndex + colOffset
+
+        if (newRow < 0 || newRow >= this.gridHeight || newCol < 0 || newCol >= this.gridWidth)
+        {
+            return null
+        }
+
+        return (this.grid[newRow][newCol] as Tile).tileType
     }
 }
 

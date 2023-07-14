@@ -12,6 +12,7 @@ export class Tile extends Phaser.GameObjects.Image
     public tileType: string
     public isInMatch = false
     private selectedAnimation: Tween | TweenChain
+    private wakeAnimation: Tween | TweenChain
 
     constructor(scene: Scene, xIndex: number, yIndex: number, spriteKey: Keys.Sprite) {
         super(scene, xIndex, yIndex, spriteKey)
@@ -46,12 +47,12 @@ export class Tile extends Phaser.GameObjects.Image
                 {
                     scale: AnimationFactory.TILE_SELECTING_SQUASHING_CONSTANT,
                     duration: 50,
-                    easel: Phaser.Math.Easing.Circular.Out,
+                    ease: Phaser.Math.Easing.Circular.Out,
                 },
                 {
                     scale: 1,
                     duration: 50,
-                    easel: Phaser.Math.Easing.Circular.Out,
+                    ease: Phaser.Math.Easing.Circular.Out,
                 },
                 {
                     angle: 10,
@@ -77,12 +78,12 @@ export class Tile extends Phaser.GameObjects.Image
                 {
                     scale: AnimationFactory.TILE_SELECTING_SQUASHING_CONSTANT,
                     duration: 50,
-                    easel: Phaser.Math.Easing.Circular.Out,
+                    ease: Phaser.Math.Easing.Circular.Out,
                 },
                 {
                     scale: 1,
                     duration: 50,
-                    easel: Phaser.Math.Easing.Circular.Out,
+                    ease: Phaser.Math.Easing.Circular.Out,
                 },
                 {
                     angle: 0,
@@ -90,6 +91,44 @@ export class Tile extends Phaser.GameObjects.Image
                     ease: Phaser.Math.Easing.Circular.InOut,
                 },
             ],
+        })
+    }
+
+    public playWakeAnimation(): void {
+        this.wakeAnimation?.stop()
+        this.wakeAnimation = this.scene.tweens.chain({
+            targets: this,
+            tweens: [
+                {
+                    scaleX: 1.2,
+                    scaleY: 0.8,
+                    duration: 400,
+                    ease: Phaser.Math.Easing.Circular.Out,
+                },
+                {
+                    scaleX: 0.8,
+                    scaleY: 1.2,
+                    duration: 400,
+                    ease: Phaser.Math.Easing.Circular.Out,
+                },
+                {
+                    scaleX: 1,
+                    scaleY: 1,
+                    duration: 400,
+                    ease: Phaser.Math.Easing.Circular.Out,
+                },
+            ],
+        })
+    }
+
+    public stopWakeAnimation(): void {
+        this.wakeAnimation?.stop()
+        this.wakeAnimation = this.scene.tweens.add({
+            targets: this,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 400,
+            ease: Phaser.Math.Easing.Circular.Out,
         })
     }
 }
