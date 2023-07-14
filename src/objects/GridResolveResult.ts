@@ -1,4 +1,5 @@
 ﻿import { Tile } from './tiles/Tile'
+import Utility from '../utility/Utility'
 
 export class GridResolveResult
 {
@@ -9,10 +10,10 @@ export class GridResolveResult
     public totalMatches: number = 0
 
     constructor(grid: Tile[][]) {
-        this.matchesOfFiveAngled = this.findMatchesOfFiveAngled(grid)
-        this.matchesOfFiveStraight = this.findMatchesOfFiveStraight(grid)
-        this.matchesOfFour = this.findMatchesOfFour(grid)
-        this.matchesOfThree = this.findMatchesOfThree(grid)
+        this.matchesOfFiveAngled = Utility.shuffleArray(this.findMatchesOfFiveAngled(grid))
+        this.matchesOfFiveStraight = Utility.shuffleArray(this.findMatchesOfFiveStraight(grid))
+        this.matchesOfFour = Utility.shuffleArray(this.findMatchesOfFour(grid))
+        this.matchesOfThree = Utility.shuffleArray(this.findMatchesOfThree(grid))
 
         this.totalMatches =
             this.matchesOfThree.length +

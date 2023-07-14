@@ -37,8 +37,8 @@ export class Tile extends Phaser.GameObjects.Image
         return this.tileType === other.tileType
     }
 
-    public resolve(): void {
-        this.scene.add.particles(this.x, this.y, this.tileType, {
+    public async resolve(): Promise<void> {
+        const emmiter = this.scene.add.particles(this.x, this.y, this.tileType, {
             lifespan: 500,
             speed: { min: 100, max: 200 },
             scale: { start: 1, end: 0, ease: Phaser.Math.Easing.Cubic.Out },
@@ -46,7 +46,20 @@ export class Tile extends Phaser.GameObjects.Image
             gravityY: 200,
             emitting: false,
         }).explode(5)
-        this.destroy()
+
+        this.scene.tweens.add({
+            targets: this,
+            scale: 0,
+            duration: 500,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            onComplete: () => this.destroy(),
+        })
+
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve()
+            }, 50)
+        })
     }
 
     public playSelectedAnimation(): void {

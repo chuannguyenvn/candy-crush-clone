@@ -6,6 +6,7 @@ import { GridResolveResult } from './GridResolveResult'
 import { CONST } from '../const/Const'
 import AnimationFactory from './AnimationFactory'
 import TimerEvent = Phaser.Time.TimerEvent
+import Utility from '../utility/Utility'
 
 class GridManager
 {
@@ -45,21 +46,25 @@ class GridManager
 
         this.scene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.moveTile, this)
 
+        this.stateMachine.configure(GridState.IDLE).onEntry(() => {
+            this.resetWakeTimer()
+        })
+
         this.stateMachine.configure(GridState.SWAPPING).onEntry(() => {
             this.swapTile()
-            this.resetWakeTimer()
+            this.stopWakeTimer()
         })
         this.stateMachine.configure(GridState.CALCULATE).onEntry(() => {
             this.updateResolveResult()
-            this.resetWakeTimer()
+            this.stopWakeTimer()
         })
         this.stateMachine.configure(GridState.CLEARING).onEntry(() => {
             this.clearGroups()
-            this.resetWakeTimer()
+            this.stopWakeTimer()
         })
         this.stateMachine.configure(GridState.DROPPING).onEntry(() => {
             this.fillAndDrop()
-            this.resetWakeTimer()
+            this.stopWakeTimer()
         })
 
         this.resetWakeTimer()
@@ -181,24 +186,15 @@ class GridManager
         }
     }
 
-    private clearGroups(): void {
-        for (const match of this.resolveResult.matchesOfThree)
-        {
-            for (const tile of match.content)
-            {
-                const { xIndex, yIndex } = tile
-                this.grid[yIndex][xIndex] = null
-                tile.resolve()
-            }
-        }
+    private async clearGroups(): Promise<void> {
 
-        for (const match of this.resolveResult.matchesOfFour)
+        for (const match of this.resolveResult.matchesOfFiveStraight)
         {
             for (const tile of match.content)
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.resolve()
+                await tile.resolve()
             }
         }
 
@@ -208,18 +204,29 @@ class GridManager
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.resolve()
+                await tile.resolve()
             }
         }
-
-        for (const match of this.resolveResult.matchesOfFiveStraight)
+        
+        for (const match of this.resolveResult.matchesOfFour)
         {
             for (const tile of match.content)
             {
                 const { xIndex, yIndex } = tile
                 this.grid[yIndex][xIndex] = null
-                tile.resolve()
+                await tile.resolve()
             }
+        }
+
+        for (const match of this.resolveResult.matchesOfThree)
+        {
+            for (const tile of match.content)
+            {
+                const { xIndex, yIndex } = tile
+                this.grid[yIndex][xIndex] = null
+                await tile.resolve()
+            }
+            
         }
 
         this.stateMachine.changeState(GridState.DROPPING)
@@ -278,6 +285,10 @@ class GridManager
                 this.resetWakeTimer()
             },
         })
+    }
+
+    private stopWakeTimer(): void {
+        this.wakeUpTimer?.destroy()
     }
 
     public findPotentialMatch(): { xIndex: number, yIndex: number, xOffset: number, yOffset: number } | null {
