@@ -135,22 +135,57 @@ export class Tile extends Phaser.GameObjects.Image
 
     public playHintAnimation(xOffset: number, yOffset: number): void {
         this.hintAnimation?.stop()
+
+        if (xOffset !== 0)
+        {
+            this.setOrigin(xOffset > 0 ? 1 : 0, 0.5)
+            this.x += this.originX === 0 ? -this.width / 2 : this.width / 2
+        }
+        else
+        {
+            this.setOrigin(0.5, yOffset > 0 ? 1 : 0)
+            this.y += this.originY === 0 ? -this.height / 2 : this.height / 2
+        }
+
         this.hintAnimation = this.scene.tweens.chain({
             targets: this,
             tweens: [
                 {
-                    x: this.x + xOffset * CONST.TILE_WIDTH,
-                    y: this.y + yOffset * CONST.TILE_HEIGHT,
-                    duration: 400,
-                    ease: Phaser.Math.Easing.Circular.Out,
+                    scaleX: xOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
+                    scaleY: yOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
+                    duration: AnimationFactory.TILE_HINT_TIME / 4,
+                    ease: Phaser.Math.Easing.Quintic.Out,
                 },
                 {
-                    x: this.x,
-                    y: this.y,
-                    duration: 400,
-                    ease: Phaser.Math.Easing.Circular.Out,
+                    scaleX: 1,
+                    scaleY: 1,
+                    duration: AnimationFactory.TILE_HINT_TIME / 4,
+                    ease: Phaser.Math.Easing.Quintic.Out,
                 },
-            ]
+                {
+                    scaleX: xOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
+                    scaleY: yOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
+                    duration: AnimationFactory.TILE_HINT_TIME / 4,
+                    ease: Phaser.Math.Easing.Quintic.Out,
+                },
+                {
+                    scaleX: 1,
+                    scaleY: 1,
+                    duration: AnimationFactory.TILE_HINT_TIME / 4,
+                    ease: Phaser.Math.Easing.Quintic.Out,
+                },
+            ],
+            onComplete: () => {
+                if (xOffset !== 0)
+                {
+                    this.x += this.originX === 0 ? this.width / 2 : -this.width / 2
+                }
+                else
+                {
+                    this.y += this.originY === 0 ? this.height / 2 : -this.height / 2
+                }
+                this.setOrigin(0.5)
+            },
         })
     }
 }

@@ -9,7 +9,10 @@ class AnimationFactory
     public static readonly TILE_DROPPING_TIME = 700
     public static readonly TILE_SWAPPING_TIME = 300
     public static readonly TILE_SWAPPING_STRETCHING_SCALE_TARGET = 1.3
-    public static readonly TILE_SWAPPING_SQUEEZING_SCALE_TARGET = 0.7
+    public static readonly TILE_SWAPPING_SQUASHING_SCALE_TARGET = 0.7
+    public static readonly TILE_HINT_STRETCHING_SCALE_TARGET = 1.2
+    public static readonly TILE_HINT_SQUASHING_SCALE_TARGET = 0.8
+    public static readonly TILE_HINT_TIME = 600
     public static readonly TILE_SELECTING_SQUASHING_CONSTANT = 1.2
 
     private scene: Scene
@@ -61,10 +64,10 @@ class AnimationFactory
         const ease = Phaser.Math.Easing.Cubic.Out
 
         let xAxisCoefficient = AnimationFactory.TILE_SWAPPING_STRETCHING_SCALE_TARGET
-        let yAxisCoefficient = AnimationFactory.TILE_SWAPPING_SQUEEZING_SCALE_TARGET
+        let yAxisCoefficient = AnimationFactory.TILE_SWAPPING_SQUASHING_SCALE_TARGET
         if (aTile.xIndex === bTile.xIndex)
         {
-            xAxisCoefficient = AnimationFactory.TILE_SWAPPING_SQUEEZING_SCALE_TARGET
+            xAxisCoefficient = AnimationFactory.TILE_SWAPPING_SQUASHING_SCALE_TARGET
             yAxisCoefficient = AnimationFactory.TILE_SWAPPING_STRETCHING_SCALE_TARGET
         }
 
