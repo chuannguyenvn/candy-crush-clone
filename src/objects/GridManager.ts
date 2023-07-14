@@ -271,104 +271,135 @@ class GridManager
         this.wakeUpTimer = this.scene.time.addEvent({
             delay: 3000,
             callback: () => {
-                this.grid[Phaser.Math.Between(0, this.gridWidth - 1)][Phaser.Math.Between(0, this.gridHeight - 1)]?.playWakeAnimation()
+                const match = this.findPotentialMatch()
+                console.log(match)
+                if (match === null) return
+                this.grid[match.yIndex][match.xIndex]?.playHintAnimation(match.xOffset, match.yOffset)
                 this.resetWakeTimer()
             },
         })
     }
 
-    public findPotentialMatch(): number[] | null {
+    public findPotentialMatch(): { xIndex: number, yIndex: number, xOffset: number, yOffset: number } | null {
         for (let row = 0; row < this.gridHeight; row++)
         {
             for (let col = 0; col < this.gridWidth; col++)
             {
                 const currentTile = this.grid[row][col] as Tile
 
-                if (this.getTileTypeByOffset(currentTile, -1, -1) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, -1, -1) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, -2, -1) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, 1, -1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, -2, -1) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, -1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, 0, -1]
+                        console.log(1)
+                        return { xIndex: col, yIndex: row, xOffset: 0, yOffset: -1 }
                     }
-                    if (this.getTileTypeByOffset(currentTile, -1, -2) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, -1, 1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, -1, -2) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, 1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, -1, 0]
+                        console.log(2)
+                        return { xIndex: col, yIndex: row, xOffset: -1, yOffset: 0 }
                     }
                 }
 
-                if (this.getTileTypeByOffset(currentTile, 1, -1) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, 1, -1) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, 2, -1) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, -1, -1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, 2, -1) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, -1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, 0, -1]
+                        console.log(3)
+                        return { xIndex: col, yIndex: row, xOffset: 0, yOffset: -1 }
                     }
-                    if (this.getTileTypeByOffset(currentTile, 1, -2) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, 1, 1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, 1, -2) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, 1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, 1, 0]
+                        console.log(4)
+                        return { xIndex: col, yIndex: row, xOffset: 1, yOffset: 0 }
                     }
                 }
 
-                if (this.getTileTypeByOffset(currentTile, 1, 1) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, 1, 1) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, 2, 1) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, -1, 1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, 2, 1) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, 1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, 0, 1]
+                        console.log(5)
+                        return { xIndex: col, yIndex: row, xOffset: 0, yOffset: 1 }
                     }
-                    if (this.getTileTypeByOffset(currentTile, 1, 2) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, 1, -1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, 1, 2) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, -1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, 1, 0]
+                        console.log(6)
+                        return { xIndex: col, yIndex: row, xOffset: 1, yOffset: 0 }
                     }
                 }
 
-                if (this.getTileTypeByOffset(currentTile, -1, 1) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, -1, 1) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, -2, 1) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, 1, 1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, -2, 1) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, 1, 1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, 0, 1]
+                        console.log(7)
+                        return { xIndex: col, yIndex: row, xOffset: 0, yOffset: 1 }
                     }
-                    if (this.getTileTypeByOffset(currentTile, -1, 2) == currentTile.tileType ||
-                        this.getTileTypeByOffset(currentTile, -1, -1) == currentTile.tileType)
+                    if (
+                        this.getTileTypeByOffset(currentTile, -1, 2) === currentTile.tileType ||
+                        this.getTileTypeByOffset(currentTile, -1, -1) === currentTile.tileType
+                    )
                     {
-                        return [row, col, -1, 0]
-                    }
-                }
-
-                if (this.getTileTypeByOffset(currentTile, 0, -2) == currentTile.tileType)
-                {
-                    if (this.getTileTypeByOffset(currentTile, 0, -3) == currentTile.tileType)
-                    {
-                        return [row, col, 0, -1]
+                        console.log(8)
+                        return { xIndex: col, yIndex: row, xOffset: -1, yOffset: 0 }
                     }
                 }
 
-                if (this.getTileTypeByOffset(currentTile, 0, 2) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, 0, -2) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, 0, 3) == currentTile.tileType)
+                    if (this.getTileTypeByOffset(currentTile, 0, -3) === currentTile.tileType)
                     {
-                        return [row, col, 0, 1]
+                        console.log(9)
+                        return { xIndex: col, yIndex: row, xOffset: 0, yOffset: -1 }
                     }
                 }
 
-                if (this.getTileTypeByOffset(currentTile, -2, 0) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, 0, 2) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, -3, 0) == currentTile.tileType)
+                    if (this.getTileTypeByOffset(currentTile, 0, 3) === currentTile.tileType)
                     {
-                        return [row, col, -1, 0]
+                        console.log(10)
+                        return { xIndex: col, yIndex: row, xOffset: 0, yOffset: 1 }
                     }
                 }
 
-                if (this.getTileTypeByOffset(currentTile, 2, 0) == currentTile.tileType)
+                if (this.getTileTypeByOffset(currentTile, -2, 0) === currentTile.tileType)
                 {
-                    if (this.getTileTypeByOffset(currentTile, 3, 0) == currentTile.tileType)
+                    if (this.getTileTypeByOffset(currentTile, -3, 0) === currentTile.tileType)
                     {
-                        return [row, col, 1, 0]
+                        console.log(11)
+                        return { xIndex: col, yIndex: row, xOffset: -1, yOffset: 0 }
+                    }
+                }
+
+                if (this.getTileTypeByOffset(currentTile, 2, 0) === currentTile.tileType)
+                {
+                    if (this.getTileTypeByOffset(currentTile, 3, 0) === currentTile.tileType)
+                    {
+                        console.log(12)
+                        return { xIndex: col, yIndex: row, xOffset: 1, yOffset: 0 }
                     }
                 }
             }
@@ -377,16 +408,17 @@ class GridManager
         return null
     }
 
-    private getTileTypeByOffset(tile: Tile, rowOffset: number, colOffset: number): string | null {
-        const newRow = tile.yIndex + rowOffset
-        const newCol = tile.xIndex + colOffset
 
-        if (newRow < 0 || newRow >= this.gridHeight || newCol < 0 || newCol >= this.gridWidth)
+    private getTileTypeByOffset(tile: Tile, xOffset: number, yOffset: number): string | null {
+        const newX = tile.xIndex + xOffset
+        const newY = tile.yIndex + yOffset
+
+        if (newY < 0 || newY >= this.gridHeight || newX < 0 || newX >= this.gridWidth)
         {
             return null
         }
 
-        return (this.grid[newRow][newCol] as Tile).tileType
+        return (this.grid[newY][newX] as Tile).tileType
     }
 }
 

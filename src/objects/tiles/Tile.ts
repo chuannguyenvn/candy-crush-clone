@@ -13,6 +13,7 @@ export class Tile extends Phaser.GameObjects.Image
     public isInMatch = false
     private selectedAnimation: Tween | TweenChain
     private wakeAnimation: Tween | TweenChain
+    private hintAnimation: Tween | TweenChain
 
     constructor(scene: Scene, xIndex: number, yIndex: number, spriteKey: Keys.Sprite) {
         super(scene, xIndex, yIndex, spriteKey)
@@ -129,6 +130,27 @@ export class Tile extends Phaser.GameObjects.Image
             scaleY: 1,
             duration: 400,
             ease: Phaser.Math.Easing.Circular.Out,
+        })
+    }
+
+    public playHintAnimation(xOffset: number, yOffset: number): void {
+        this.hintAnimation?.stop()
+        this.hintAnimation = this.scene.tweens.chain({
+            targets: this,
+            tweens: [
+                {
+                    x: this.x + xOffset * CONST.TILE_WIDTH,
+                    y: this.y + yOffset * CONST.TILE_HEIGHT,
+                    duration: 400,
+                    ease: Phaser.Math.Easing.Circular.Out,
+                },
+                {
+                    x: this.x,
+                    y: this.y,
+                    duration: 400,
+                    ease: Phaser.Math.Easing.Circular.Out,
+                },
+            ]
         })
     }
 }
