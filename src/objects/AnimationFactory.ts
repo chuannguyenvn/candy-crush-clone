@@ -15,6 +15,7 @@ class AnimationFactory
     public static readonly TILE_HINT_SQUASHING_SCALE_TARGET = 0.8
     public static readonly TILE_HINT_TIME = 600
     public static readonly TILE_SELECTING_SQUASHING_CONSTANT = 1.2
+    public static readonly TILE_COMBINING_TIME = 800
 
     private scene: Scene
     private gridManager: GridManager

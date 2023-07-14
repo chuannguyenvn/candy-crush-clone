@@ -1,12 +1,11 @@
 import TweenChain = Phaser.Tweens.TweenChain
 import Tween = Phaser.Tweens.Tween
 import { Scene } from 'phaser'
-import Keys from '../../const/Keys'
 import { CONST } from '../../const/Const'
 import AnimationFactory from '../AnimationFactory'
 import GridManager from '../GridManager'
 
-export abstract class Tile extends Phaser.GameObjects.Image
+export abstract class Tile extends Phaser.GameObjects.Container
 {
     public xIndex: number
     public yIndex: number
@@ -15,16 +14,18 @@ export abstract class Tile extends Phaser.GameObjects.Image
     protected selectedAnimation: Tween | TweenChain
     protected wakeAnimation: Tween | TweenChain
     protected hintAnimation: Tween | TweenChain
+    protected moveAnimation: Tween | TweenChain
     protected gridManager: GridManager
 
+    protected tileImage: Phaser.GameObjects.Image
+
     constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
-        super(scene, xIndex, yIndex, spriteKey)
+        super(scene, 0, 0)
         this.scene = scene
         this.scene.add.existing(this)
         this.gridManager = gridManager
 
-        this.setOrigin(0.5)
-        this.setDisplaySize(CONST.TILE_WIDTH, CONST.TILE_HEIGHT)
+        this.setSize(CONST.TILE_WIDTH, CONST.TILE_HEIGHT)
         this.setInteractive()
 
         this.xIndex = xIndex
@@ -34,6 +35,10 @@ export abstract class Tile extends Phaser.GameObjects.Image
         this.y = yIndex * CONST.TILE_HEIGHT
 
         this.tileType = spriteKey
+
+        this.tileImage = this.scene.add.image(0, 0, this.tileType)
+        this.tileImage.setOrigin(0.5)
+        this.add(this.tileImage)
     }
 
     public canMatchWith(other: Tile): boolean {
@@ -42,6 +47,8 @@ export abstract class Tile extends Phaser.GameObjects.Image
     }
 
     public async resolve(): Promise<void> {
+        this.stopAllAnimation()
+        
         this.gridManager.grid[this.yIndex][this.xIndex] = null
 
         this.scene.tweens.add({
@@ -50,10 +57,17 @@ export abstract class Tile extends Phaser.GameObjects.Image
             duration: 500,
             ease: Phaser.Math.Easing.Cubic.Out,
         })
+        
+        this.scene.tweens.add({
+            targets: this.tileImage,
+            scale: 0,
+            duration: 500,
+            ease: Phaser.Math.Easing.Cubic.Out,
+        })
     }
 
     public playSelectedAnimation(): void {
-        this.selectedAnimation?.stop()
+        this.stopAllAnimation()
         this.selectedAnimation = this.scene.tweens.chain({
             targets: this,
             tweens: [
@@ -108,7 +122,7 @@ export abstract class Tile extends Phaser.GameObjects.Image
     }
 
     public playWakeAnimation(): void {
-        this.wakeAnimation?.stop()
+        this.stopAllAnimation()
         this.wakeAnimation = this.scene.tweens.chain({
             targets: this,
             tweens: [
@@ -146,16 +160,16 @@ export abstract class Tile extends Phaser.GameObjects.Image
     }
 
     public playHintAnimation(xOffset: number, yOffset: number): void {
-        this.hintAnimation?.stop()
+        this.stopAllAnimation()
 
         if (xOffset !== 0)
         {
-            this.setOrigin(xOffset > 0 ? 1 : 0, 0.5)
+            this.tileImage.setOrigin(xOffset > 0 ? 1 : 0, 0.5)
             this.x += this.originX === 0 ? -this.width / 2 : this.width / 2
         }
         else
         {
-            this.setOrigin(0.5, yOffset > 0 ? 1 : 0)
+            this.tileImage.setOrigin(0.5, yOffset > 0 ? 1 : 0)
             this.y += this.originY === 0 ? -this.height / 2 : this.height / 2
         }
 
@@ -196,8 +210,31 @@ export abstract class Tile extends Phaser.GameObjects.Image
                 {
                     this.y += this.originY === 0 ? this.height / 2 : -this.height / 2
                 }
-                this.setOrigin(0.5)
+                this.tileImage.setOrigin(0.5)
             },
         })
+    }
+
+    public playMoveAnimation(x: number, y: number): void {
+        this.stopAllAnimation()
+        this.moveAnimation = this.scene.tweens.add({
+            targets: this,
+            x: x,
+            y: y,
+            duration: AnimationFactory.TILE_COMBINING_TIME,
+            ease: Phaser.Math.Easing.Sine.InOut,
+        })
+    }
+
+    public stopAllAnimation(): void {
+        this.selectedAnimation?.stop()
+        this.wakeAnimation?.stop()
+        this.hintAnimation?.stop()
+        this.moveAnimation?.stop()
+    }
+
+    destroy(fromScene?: boolean) {
+        super.destroy(fromScene)
+        this.tileImage.destroy()
     }
 }

@@ -66,7 +66,7 @@ class GridManager
             this.stopWakeTimer()
         })
         this.stateMachine.configure(GridState.DROPPING).onEntry(() => {
-            this.fillAndDrop()
+            this.dropAndFill()
             this.stopWakeTimer()
         })
 
@@ -242,7 +242,7 @@ class GridManager
         this.stateMachine.changeState(GridState.DROPPING)
     }
 
-    private fillAndDrop(): void {
+    private dropAndFill(): void {
         for (let col = 0; col < this.gridWidth; col++)
         {
             let emptySpaces = 0
@@ -295,6 +295,7 @@ class GridManager
                 this.resetWakeTimer()
             },
         })
+        console.log("reset timer")
     }
 
     private stopWakeTimer(): void {

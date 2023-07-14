@@ -10,7 +10,8 @@ class ExplosionTile extends Tile
     constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, gridManager, xIndex, yIndex, spriteKey)
 
-        this.fireImage = this.scene.add.image(this.x, this.y, Keys.Sprite.FIRE)
+        this.fireImage = this.scene.add.image(0, 0, Keys.Sprite.FIRE)
+        this.add(this.fireImage)
     }
 
     public override async resolve(): Promise<void> {
