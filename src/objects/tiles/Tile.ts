@@ -3,6 +3,7 @@ import Tween = Phaser.Tweens.Tween
 import { Scene } from 'phaser'
 import Keys from '../../const/Keys'
 import { CONST } from '../../const/Const'
+import AnimationFactory from '../AnimationFactory'
 
 export class Tile extends Phaser.GameObjects.Image
 {
@@ -43,7 +44,7 @@ export class Tile extends Phaser.GameObjects.Image
             targets: this,
             tweens: [
                 {
-                    scale: 1.1,
+                    scale: AnimationFactory.TILE_SELECTING_SQUASHING_CONSTANT,
                     duration: 50,
                     easel: Phaser.Math.Easing.Circular.Out,
                 },
@@ -70,11 +71,25 @@ export class Tile extends Phaser.GameObjects.Image
 
     public stopSelectedAnimation(): void {
         this.selectedAnimation?.stop()
-        this.selectedAnimation = this.scene.tweens.add({
+        this.selectedAnimation = this.scene.tweens.chain({
             targets: this,
-            angle: 0,
-            duration: 500,
-            ease: Phaser.Math.Easing.Circular.InOut,
+            tweens: [
+                {
+                    scale: AnimationFactory.TILE_SELECTING_SQUASHING_CONSTANT,
+                    duration: 50,
+                    easel: Phaser.Math.Easing.Circular.Out,
+                },
+                {
+                    scale: 1,
+                    duration: 50,
+                    easel: Phaser.Math.Easing.Circular.Out,
+                },
+                {
+                    angle: 0,
+                    duration: 500,
+                    ease: Phaser.Math.Easing.Circular.InOut,
+                },
+            ],
         })
     }
 }
