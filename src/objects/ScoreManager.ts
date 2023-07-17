@@ -1,6 +1,7 @@
 ﻿import { CONST } from '../const/Const'
 import { GameScene } from '../scenes/game-scene'
 import Keys from '../const/Keys'
+import ConfettiParticle from './ConfettiParticle'
 
 class ScoreManager extends Phaser.GameObjects.Container
 {
@@ -114,6 +115,8 @@ class ScoreManager extends Phaser.GameObjects.Container
         this.star3Background.setOrigin(0.5)
         this.star3Background.setDepth(1)
         this.star3Background.setDisplaySize(32, 32)
+
+        this.explodeConfetti(100, 100)
     }
 
     public addScore(amount: number): void {
@@ -130,6 +133,8 @@ class ScoreManager extends Phaser.GameObjects.Container
                 duration: 500,
                 ease: Phaser.Math.Easing.Sine.InOut,
             })
+
+            this.explodeConfetti(this.star1.x, this.star1.y)
         }
         else if (this.currentScore >= 8000 && this.milestonesReached === 1)
         {
@@ -141,6 +146,8 @@ class ScoreManager extends Phaser.GameObjects.Container
                 duration: 500,
                 ease: Phaser.Math.Easing.Sine.InOut,
             })
+
+            this.explodeConfetti(this.star2.x, this.star2.y)
         }
         else if (this.currentScore >= 12000 && this.milestonesReached === 2)
         {
@@ -152,7 +159,36 @@ class ScoreManager extends Phaser.GameObjects.Container
                 duration: 500,
                 ease: Phaser.Math.Easing.Sine.InOut,
             })
+
+            this.explodeConfetti(this.star3.x, this.star3.y)
         }
+    }
+
+    private explodeConfetti(xPos: number, yPos: number) {
+        const hsv = Phaser.Display.Color.HSVColorWheel(0.8, 0.9)
+        const tint = hsv.map(entry => entry.color)
+
+        this.gameScene.add.particles(xPos, yPos, Keys.Sprite.CONFETTI, {
+            lifespan: 5000,
+            speedX: { min: -50, max: 50 },
+            speedY: { min: -300, max: -600 },
+            gravityY: 200,
+            scale: { min: 0.1, max: 0.5 },
+            tint: tint,
+            emitting: true,
+            particleClass: ConfettiParticle,
+        }).explode(Phaser.Math.Between(10, 15))
+
+        this.gameScene.add.particles(xPos, yPos, Keys.Sprite.CONFETTI_FLIPPED, {
+            lifespan: 5000,
+            speedX: { min: -50, max: 50 },
+            speedY: { min: -300, max: -600 },
+            gravityY: 200,
+            scale: { min: 0.1, max: 0.5 },
+            tint: tint,
+            emitting: true,
+            particleClass: ConfettiParticle,
+        }).explode(Phaser.Math.Between(10, 15))
     }
 
     public resetMultiplier(): void {

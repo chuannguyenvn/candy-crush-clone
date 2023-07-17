@@ -105,6 +105,16 @@
         "type": "image",
         "key": "progress-star",
         "url": "./assets/images/progress-star.png"
+      },
+      {
+        "type": "image",
+        "key": "confetti",
+        "url": "./assets/images/confetti.png"
+      },
+      {
+        "type": "image",
+        "key": "confetti-flipped",
+        "url": "./assets/images/confetti-flipped.png"
       }
     ]
   }

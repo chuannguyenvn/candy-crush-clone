@@ -29,6 +29,8 @@
         BOLT = 'bolt',
         STAR = 'star',
         PROGRESS_STAR = 'progress-star',
+        CONFETTI = 'confetti',
+        CONFETTI_FLIPPED = 'confetti-flipped',
     }
 
 

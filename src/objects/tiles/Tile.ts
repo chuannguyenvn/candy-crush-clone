@@ -61,7 +61,7 @@ export abstract class Tile extends Phaser.GameObjects.Container
         this.stopAllAnimation()
 
         this.gridManager.grid[this.yIndex][this.xIndex] = null
-        this.gameScene.scoreManager.addScore(25)
+        this.gameScene.scoreManager.addScore(250)
         
         this.scene.tweens.add({
             targets: this,
