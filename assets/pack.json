@@ -102,7 +102,7 @@
         "url": "./assets/images/star_3d.png"
       },
       {
-        "type": "progress-star",
+        "type": "image",
         "key": "progress-star",
         "url": "./assets/images/progress-star.png"
       }

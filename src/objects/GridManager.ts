@@ -218,7 +218,7 @@ class GridManager
                     const clearTile = new ClearTile(this.gameScene, this, chosenTile.xIndex, chosenTile.yIndex)
                     this.grid[chosenTile.yIndex][chosenTile.xIndex] = clearTile
                     setTimeout(() => {
-                        this.gameScene.cameras.main.pan(CONST.TILE_WIDTH * 4, CONST.TILE_HEIGHT * 4, 500, Phaser.Math.Easing.Cubic.Out)
+                        this.gameScene.cameras.main.pan(CONST.TILE_WIDTH * 3.5, CONST.TILE_HEIGHT * 4, 500, Phaser.Math.Easing.Cubic.Out)
                         this.gameScene.cameras.main.rotateTo(0, true, 500, Phaser.Math.Easing.Cubic.Out)
                         this.gameScene.cameras.main.zoomTo(1, 500, Phaser.Math.Easing.Cubic.Out)
                         setTimeout(() => {
