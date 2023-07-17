@@ -39,6 +39,15 @@ export abstract class Tile extends Phaser.GameObjects.Container
         this.tileImage = this.scene.add.image(0, 0, this.tileType)
         this.tileImage.setOrigin(0.5)
         this.add(this.tileImage)
+
+        this.setScale(0)
+
+        this.scene.tweens.add({
+            targets: this,
+            scale: 1,
+            duration: 500,
+            ease: Phaser.Math.Easing.Elastic.Out,
+        })
     }
 
     public canMatchWith(other: Tile): boolean {
@@ -48,7 +57,7 @@ export abstract class Tile extends Phaser.GameObjects.Container
 
     public async resolve(): Promise<void> {
         this.stopAllAnimation()
-        
+
         this.gridManager.grid[this.yIndex][this.xIndex] = null
 
         this.scene.tweens.add({
@@ -57,12 +66,13 @@ export abstract class Tile extends Phaser.GameObjects.Container
             duration: 500,
             ease: Phaser.Math.Easing.Cubic.Out,
         })
-        
+
         this.scene.tweens.add({
             targets: this.tileImage,
             scale: 0,
             duration: 500,
             ease: Phaser.Math.Easing.Cubic.Out,
+            onComplete: () => this.tileImage.destroy(),
         })
     }
 

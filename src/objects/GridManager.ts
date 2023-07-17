@@ -191,7 +191,7 @@ class GridManager
     private async clearGroups(): Promise<void> {
         if (this.firstSelectedTile?.tileType === Keys.Sprite.STAR)
         {
-           await this.firstSelectedTile.resolve()
+            await this.firstSelectedTile.resolve()
         }
         if (this.secondSelectedTile?.tileType === Keys.Sprite.STAR)
         {
@@ -206,8 +206,23 @@ class GridManager
             }
 
             const chosenTile = match.content[2]
-            const clearTile = new ClearTile(this.scene, this, chosenTile.xIndex, chosenTile.yIndex)
-            this.grid[chosenTile.yIndex][chosenTile.xIndex] = clearTile
+            this.scene.cameras.main.pan(chosenTile.x, chosenTile.y, 500, Phaser.Math.Easing.Cubic.Out)
+            this.scene.cameras.main.rotateTo(Math.random() * 0.05, true, 500, Phaser.Math.Easing.Cubic.Out)
+            this.scene.cameras.main.zoomTo(1.5, 500, Phaser.Math.Easing.Cubic.Out)
+            await new Promise<void>((resolve, reject) => {
+                setTimeout(() => {
+                    const clearTile = new ClearTile(this.scene, this, chosenTile.xIndex, chosenTile.yIndex)
+                    this.grid[chosenTile.yIndex][chosenTile.xIndex] = clearTile
+                    setTimeout(() => {
+                        this.scene.cameras.main.pan(CONST.TILE_WIDTH * 4, CONST.TILE_HEIGHT * 4, 500, Phaser.Math.Easing.Cubic.Out)
+                        this.scene.cameras.main.rotateTo(0, true, 500, Phaser.Math.Easing.Cubic.Out)
+                        this.scene.cameras.main.zoomTo(1, 500, Phaser.Math.Easing.Cubic.Out)
+                        setTimeout(() => {
+                            resolve()
+                        }, 500)
+                    }, 500)
+                }, 500)
+            })
         }
 
         for (const match of this.resolveResult.matchesOfFiveAngled)
@@ -295,7 +310,7 @@ class GridManager
                 this.resetWakeTimer()
             },
         })
-        console.log("reset timer")
+        console.log('reset timer')
     }
 
     private stopWakeTimer(): void {

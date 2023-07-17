@@ -25,6 +25,14 @@ class ExplosionTile extends Tile
         await this.gridManager.getTileByOffset(this, 1, -1)?.resolve()
         await this.gridManager.getTileByOffset(this, 1, 0)?.resolve()
         await this.gridManager.getTileByOffset(this, 1, 1)?.resolve()
+
+        this.scene.tweens.add({
+            targets: this.fireImage,
+            scale: 0,
+            duration: 500,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            onComplete: () => this.fireImage.destroy(),
+        })
     }
 }
 
