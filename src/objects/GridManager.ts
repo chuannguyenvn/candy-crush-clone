@@ -128,8 +128,7 @@ class GridManager
                 }
                 else
                 {
-                    this.firstSelectedTile = null
-                    this.secondSelectedTile = null
+                    this.deselectTiles()
                 }
             }
 
@@ -306,13 +305,11 @@ class GridManager
             delay: 3000,
             callback: () => {
                 const match = this.findPotentialMatch()
-                console.log(match)
                 if (match === null) return
                 this.grid[match.yIndex][match.xIndex]?.playHintAnimation(match.xOffset, match.yOffset)
                 this.resetWakeTimer()
             },
         })
-        console.log('reset timer')
     }
 
     private stopWakeTimer(): void {
