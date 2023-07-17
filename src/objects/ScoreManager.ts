@@ -34,6 +34,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         })
         this.gameScene = scene
         this.progressBar = this.scene.add.graphics()
+        this.progressBar.setDepth(-100)
         this.progressBar.fillStyle(0x444444, 1)
         this.progressBar.fillRoundedRect(
             CONST.TILE_HEIGHT * -0.5,
@@ -44,6 +45,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
 
         this.progressBarBackground = this.scene.add.graphics()
+        this.progressBarBackground.setDepth(-101)
         this.progressBarBackground.fillStyle(0xcccccc, 1)
         this.progressBarBackground.fillRoundedRect(
             CONST.TILE_HEIGHT * -0.5,
@@ -52,7 +54,6 @@ class ScoreManager extends Phaser.GameObjects.Container
             5,
             2.5,
         )
-        this.progressBarBackground.setDepth(-1)
 
         this.star1 = scene.add.image(
             CONST.TILE_HEIGHT * -0.5 + CONST.TILE_HEIGHT * 8 / 3,
@@ -61,7 +62,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
         this.star1.setTint(0xcccccc)
         this.star1.setOrigin(0.5)
-        this.star1.setDepth(2)
+        this.star1.setDepth(0)
         this.star1.setDisplaySize(24, 24)
 
         this.star1Background = scene.add.image(
@@ -71,7 +72,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
         this.star1Background.setTint(0xeeeeee)
         this.star1Background.setOrigin(0.5)
-        this.star1Background.setDepth(1)
+        this.star1Background.setDepth(-1)
         this.star1Background.setDisplaySize(32, 32)
 
         // Create the second star
@@ -82,7 +83,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
         this.star2.setTint(0xcccccc)
         this.star2.setOrigin(0.5)
-        this.star2.setDepth(2)
+        this.star2.setDepth(0)
         this.star2.setDisplaySize(24, 24)
 
         this.star2Background = scene.add.image(
@@ -92,7 +93,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
         this.star2Background.setTint(0xeeeeee)
         this.star2Background.setOrigin(0.5)
-        this.star2Background.setDepth(1)
+        this.star2Background.setDepth(-1)
         this.star2Background.setDisplaySize(32, 32)
 
         // Create the third star
@@ -103,7 +104,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
         this.star3.setTint(0xcccccc)
         this.star3.setOrigin(0.5)
-        this.star3.setDepth(2)
+        this.star3.setDepth(0)
         this.star3.setDisplaySize(24, 24)
 
         this.star3Background = scene.add.image(
@@ -113,7 +114,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         )
         this.star3Background.setTint(0xeeeeee)
         this.star3Background.setOrigin(0.5)
-        this.star3Background.setDepth(1)
+        this.star3Background.setDepth(-1)
         this.star3Background.setDisplaySize(32, 32)
 
         this.explodeConfetti(100, 100)
