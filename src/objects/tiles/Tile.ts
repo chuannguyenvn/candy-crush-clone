@@ -1,9 +1,9 @@
 import TweenChain = Phaser.Tweens.TweenChain
 import Tween = Phaser.Tweens.Tween
-import { Scene } from 'phaser'
 import { CONST } from '../../const/Const'
 import AnimationFactory from '../AnimationFactory'
 import GridManager from '../GridManager'
+import { GameScene } from '../../scenes/game-scene'
 
 export abstract class Tile extends Phaser.GameObjects.Container
 {
@@ -19,9 +19,11 @@ export abstract class Tile extends Phaser.GameObjects.Container
 
     protected tileImage: Phaser.GameObjects.Image
 
-    constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
+    protected gameScene: GameScene
+
+    constructor(scene: GameScene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, 0, 0)
-        this.scene = scene
+        this.gameScene = scene
         this.scene.add.existing(this)
         this.gridManager = gridManager
 
@@ -59,7 +61,8 @@ export abstract class Tile extends Phaser.GameObjects.Container
         this.stopAllAnimation()
 
         this.gridManager.grid[this.yIndex][this.xIndex] = null
-
+        this.gameScene.scoreManager.addScore(10)
+        
         this.scene.tweens.add({
             targets: this,
             scale: 0,

@@ -2,6 +2,7 @@
 import { Scene } from 'phaser'
 import { Tile } from './tiles/Tile'
 import GridManager from './GridManager'
+import { GameScene } from '../scenes/game-scene'
 
 class AnimationFactory
 {
@@ -20,7 +21,7 @@ class AnimationFactory
     private scene: Scene
     private gridManager: GridManager
 
-    constructor(scene: Scene, gridManager: GridManager) {
+    constructor(scene: GameScene, gridManager: GridManager) {
         this.scene = scene
         this.gridManager = gridManager
     }

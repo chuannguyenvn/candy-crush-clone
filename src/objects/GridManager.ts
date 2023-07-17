@@ -9,6 +9,7 @@ import Utility from '../utility/Utility'
 import NormalTile from './tiles/NormalTile'
 import ExplosionTile from './tiles/ExplosionTile'
 import ClearTile from './tiles/ClearTile'
+import { GameScene } from '../scenes/game-scene'
 import TimerEvent = Phaser.Time.TimerEvent
 
 class GridManager
@@ -34,23 +35,26 @@ class GridManager
 
     private wakeUpTimer: TimerEvent
 
+    public gameScene: GameScene
+
     constructor(
-        scene: Scene,
+        scene: GameScene,
         gridWidth: number,
         gridHeight: number,
         possibleFoodTypes: Keys.Sprite[],
     ) {
-        this.scene = scene
+        this.gameScene = scene
         this.gridWidth = gridWidth
         this.gridHeight = gridHeight
         this.possibleItemTypes = possibleFoodTypes
 
-        this.animationFactory = new AnimationFactory(this.scene, this)
+        this.animationFactory = new AnimationFactory(scene, this)
 
-        this.scene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.moveTile, this)
+        this.gameScene.input.on(Phaser.Input.Events.GAMEOBJECT_DOWN, this.moveTile, this)
 
         this.stateMachine.configure(GridState.IDLE).onEntry(() => {
             this.resetWakeTimer()
+            this.gameScene.scoreManager.resetMultiplier()
         })
 
         this.stateMachine.configure(GridState.SWAPPING).onEntry(() => {
@@ -92,7 +96,7 @@ class GridManager
         const randomIndex = Math.floor(Math.random() * this.possibleItemTypes.length)
         const randomItemType = this.possibleItemTypes[randomIndex]
 
-        const newTile = new NormalTile(this.scene, this, xIndex, yIndex, randomItemType)
+        const newTile = new NormalTile(this.gameScene, this, xIndex, yIndex, randomItemType)
         this.grid[yIndex][xIndex] = newTile
 
         this.animationFactory.animateTileDropping(this.grid[yIndex][xIndex] as Tile, newTile.y - this.gridHeight * CONST.TILE_HEIGHT, newTile.y)
@@ -206,17 +210,17 @@ class GridManager
             }
 
             const chosenTile = match.content[2]
-            this.scene.cameras.main.pan(chosenTile.x, chosenTile.y, 500, Phaser.Math.Easing.Cubic.Out)
-            this.scene.cameras.main.rotateTo(Math.random() * 0.05, true, 500, Phaser.Math.Easing.Cubic.Out)
-            this.scene.cameras.main.zoomTo(1.5, 500, Phaser.Math.Easing.Cubic.Out)
+            this.gameScene.cameras.main.pan(chosenTile.x, chosenTile.y, 500, Phaser.Math.Easing.Cubic.Out)
+            this.gameScene.cameras.main.rotateTo(Math.random() * 0.05, true, 500, Phaser.Math.Easing.Cubic.Out)
+            this.gameScene.cameras.main.zoomTo(1.5, 500, Phaser.Math.Easing.Cubic.Out)
             await new Promise<void>((resolve, reject) => {
                 setTimeout(() => {
-                    const clearTile = new ClearTile(this.scene, this, chosenTile.xIndex, chosenTile.yIndex)
+                    const clearTile = new ClearTile(this.gameScene, this, chosenTile.xIndex, chosenTile.yIndex)
                     this.grid[chosenTile.yIndex][chosenTile.xIndex] = clearTile
                     setTimeout(() => {
-                        this.scene.cameras.main.pan(CONST.TILE_WIDTH * 4, CONST.TILE_HEIGHT * 4, 500, Phaser.Math.Easing.Cubic.Out)
-                        this.scene.cameras.main.rotateTo(0, true, 500, Phaser.Math.Easing.Cubic.Out)
-                        this.scene.cameras.main.zoomTo(1, 500, Phaser.Math.Easing.Cubic.Out)
+                        this.gameScene.cameras.main.pan(CONST.TILE_WIDTH * 4, CONST.TILE_HEIGHT * 4, 500, Phaser.Math.Easing.Cubic.Out)
+                        this.gameScene.cameras.main.rotateTo(0, true, 500, Phaser.Math.Easing.Cubic.Out)
+                        this.gameScene.cameras.main.zoomTo(1, 500, Phaser.Math.Easing.Cubic.Out)
                         setTimeout(() => {
                             resolve()
                         }, 500)
@@ -241,7 +245,7 @@ class GridManager
             }
 
             const chosenTile = Utility.getRandomElement(match.content)
-            const explosionTile = new ExplosionTile(this.scene, this, chosenTile.xIndex, chosenTile.yIndex, chosenTile.tileType)
+            const explosionTile = new ExplosionTile(this.gameScene, this, chosenTile.xIndex, chosenTile.yIndex, chosenTile.tileType)
             this.grid[chosenTile.yIndex][chosenTile.xIndex] = explosionTile
         }
 
@@ -293,14 +297,14 @@ class GridManager
             }
         }
 
-        this.scene.time.delayedCall(AnimationFactory.TILE_DROPPING_TIME, () => {
+        this.gameScene.time.delayedCall(AnimationFactory.TILE_DROPPING_TIME, () => {
             this.stateMachine.changeState(GridState.CALCULATE)
         })
     }
 
     private resetWakeTimer(): void {
         this.wakeUpTimer?.destroy()
-        this.wakeUpTimer = this.scene.time.addEvent({
+        this.wakeUpTimer = this.gameScene.time.addEvent({
             delay: 3000,
             callback: () => {
                 const match = this.findPotentialMatch()

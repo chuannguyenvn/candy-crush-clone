@@ -28,6 +28,7 @@
         FIRE = 'fire',
         BOLT = 'bolt',
         STAR = 'star',
+        PROGRESS_STAR = 'progress-star',
     }
 
 

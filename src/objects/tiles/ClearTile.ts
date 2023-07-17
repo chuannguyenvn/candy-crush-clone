@@ -2,10 +2,11 @@
 import { Scene } from 'phaser'
 import GridManager from '../GridManager'
 import Keys from '../../const/Keys'
+import { GameScene } from '../../scenes/game-scene'
 
 class ClearTile extends Tile
 {
-    constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number) {
+    constructor(scene: GameScene, gridManager: GridManager, xIndex: number, yIndex: number) {
         super(scene, gridManager, xIndex, yIndex, Keys.Sprite.STAR)
     }
 

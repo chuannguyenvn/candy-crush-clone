@@ -1,18 +1,11 @@
 import { CONST } from '../const/Const'
-import { Tile } from '../objects/tiles/Tile'
 import GridManager from '../objects/GridManager'
+import ScoreManager from '../objects/ScoreManager'
 
 export class GameScene extends Phaser.Scene
 {
-    // Variables
-    private canMove: boolean
-
-    // Grid with tiles
-    private tileGrid: (Tile | undefined)[][]
-
-    // Selected Tiles
-    private firstSelectedTile: Tile | undefined
-    private secondSelectedTile: Tile | undefined
+    public gridManager: GridManager
+    public scoreManager: ScoreManager
 
     constructor() {
         super({
@@ -24,6 +17,7 @@ export class GameScene extends Phaser.Scene
         this.cameras.main.setBackgroundColor(0xeeeeee)
         this.cameras.main.centerOn(CONST.TILE_WIDTH * 3.5, CONST.TILE_HEIGHT * 3.5)
 
-        new GridManager(this, 8, 8, CONST.CANDY_TYPES)
+        this.gridManager = new GridManager(this, 8, 8, CONST.CANDY_TYPES)
+        this.scoreManager = new ScoreManager(this)
     }
 }

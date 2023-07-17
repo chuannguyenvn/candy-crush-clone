@@ -2,12 +2,13 @@
 import { Scene } from 'phaser'
 import GridManager from '../GridManager'
 import Keys from '../../const/Keys'
+import { GameScene } from '../../scenes/game-scene'
 
 class ExplosionTile extends Tile
 {
     private fireImage: Phaser.GameObjects.Image
 
-    constructor(scene: Scene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
+    constructor(scene: GameScene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, gridManager, xIndex, yIndex, spriteKey)
 
         this.fireImage = this.scene.add.image(0, 0, Keys.Sprite.FIRE)

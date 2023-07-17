@@ -100,6 +100,11 @@
         "type": "image",
         "key": "star",
         "url": "./assets/images/star_3d.png"
+      },
+      {
+        "type": "progress-star",
+        "key": "progress-star",
+        "url": "./assets/images/progress-star.png"
       }
     ]
   }
