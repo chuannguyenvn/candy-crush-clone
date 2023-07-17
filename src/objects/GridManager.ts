@@ -63,15 +63,13 @@ class GridManager
         })
         this.stateMachine.configure(GridState.CALCULATE).onEntry(() => {
             this.updateResolveResult()
-            this.stopWakeTimer()
         })
         this.stateMachine.configure(GridState.CLEARING).onEntry(() => {
-            this.clearGroups()
             this.stopWakeTimer()
+            this.clearGroups()
         })
         this.stateMachine.configure(GridState.DROPPING).onEntry(() => {
             this.dropAndFill()
-            this.stopWakeTimer()
         })
 
         this.resetWakeTimer()

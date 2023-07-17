@@ -178,16 +178,16 @@ export abstract class Tile extends Phaser.GameObjects.Container
         if (xOffset !== 0)
         {
             this.tileImage.setOrigin(xOffset > 0 ? 1 : 0, 0.5)
-            this.x += this.originX === 0 ? -this.width / 2 : this.width / 2
+            this.tileImage.x += this.tileImage.originX === 0 ? -this.tileImage.width / 2 : this.tileImage.width / 2
         }
         else
         {
             this.tileImage.setOrigin(0.5, yOffset > 0 ? 1 : 0)
-            this.y += this.originY === 0 ? -this.height / 2 : this.height / 2
+            this.tileImage.y += this.tileImage.originY === 0 ? -this.tileImage.height / 2 : this.tileImage.height / 2
         }
 
         this.hintAnimation = this.scene.tweens.chain({
-            targets: this,
+            targets: this.tileImage,
             tweens: [
                 {
                     scaleX: xOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
@@ -217,11 +217,11 @@ export abstract class Tile extends Phaser.GameObjects.Container
             onComplete: () => {
                 if (xOffset !== 0)
                 {
-                    this.x += this.originX === 0 ? this.width / 2 : -this.width / 2
+                    this.tileImage.x += this.tileImage.originX === 0 ? this.tileImage.width / 2 : -this.tileImage.width / 2
                 }
                 else
                 {
-                    this.y += this.originY === 0 ? this.height / 2 : -this.height / 2
+                    this.tileImage.y += this.tileImage.originY === 0 ? this.tileImage.height / 2 : -this.tileImage.height / 2
                 }
                 this.tileImage.setOrigin(0.5)
             },
