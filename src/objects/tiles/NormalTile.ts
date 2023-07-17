@@ -1,4 +1,5 @@
 ﻿import { Tile } from './Tile'
+import TileParticle from '../TileParticle'
 import Vector2 = Phaser.Math.Vector2
 
 class NormalTile extends Tile
@@ -6,16 +7,14 @@ class NormalTile extends Tile
     public override async resolve(): Promise<void> {
         super.resolve()
 
-        this.scene.add.particles(this.x, this.y, this.tileType, {
-            lifespan: 500,
-            speed: { min: 100, max: 200 },
-            scale: { start: 1, end: 0, ease: Phaser.Math.Easing.Cubic.Out },
+        this.gameScene.time.delayedCall(200, () => this.scene.add.particles(this.x, this.y, this.tileType, {
+            lifespan: 700,
             rotate: { start: 0, min: 0, max: 360 },
-            gravityY: 200,
             emitting: false,
-            particleClass: CustomParticle
-            
-        }).explode(5)
+            particleClass: TileParticle,
+        }).explode(Phaser.Math.Between(2, 3)))
+
+        this.setDepth(10)
 
         this.scene.cameras.main.shake(50, new Vector2(0.003, 0.003))
 
@@ -27,8 +26,5 @@ class NormalTile extends Tile
     }
 }
 
-class CustomParticle extends Phaser.GameObjects.Particles.Particle {
-    
-}
 
 export default NormalTile

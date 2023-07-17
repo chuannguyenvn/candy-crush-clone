@@ -66,15 +66,15 @@ export abstract class Tile extends Phaser.GameObjects.Container
         this.scene.tweens.add({
             targets: this,
             scale: 0,
-            duration: 500,
-            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 250,
+            ease: Phaser.Math.Easing.Back.In,
         })
 
         this.scene.tweens.add({
             targets: this.tileImage,
             scale: 0,
-            duration: 500,
-            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 250,
+            ease: Phaser.Math.Easing.Back.In,
             onComplete: () => this.tileImage.destroy(),
         })
     }
