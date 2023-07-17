@@ -56,7 +56,6 @@ class GridManager
             this.resetWakeTimer()
             this.gameScene.scoreManager.resetMultiplier()
         })
-
         this.stateMachine.configure(GridState.SWAPPING).onEntry(() => {
             this.swapTile()
             this.stopWakeTimer()
@@ -71,9 +70,11 @@ class GridManager
         this.stateMachine.configure(GridState.DROPPING).onEntry(() => {
             this.dropAndFill()
         })
-
+        this.stateMachine.configure(GridState.SHUFFLING).onEntry(() => {
+            this.shuffle()
+        })
+        
         this.resetWakeTimer()
-
         this.initGrid()
     }
 
@@ -467,6 +468,11 @@ class GridManager
 
         return (this.grid[newY][newX] as Tile).tileType
     }
+
+    private shuffle(): void {
+        Phaser.Geom.Circle
+        this.stateMachine.changeState(GridState.CALCULATE)
+    }
 }
 
 enum GridState
@@ -479,6 +485,7 @@ enum GridState
     MERGING = 'MERGING',
     CLEARING = 'CLEARING',
     DROPPING = 'DROPPING',
+    SHUFFLING = 'SHUFFLING',
 }
 
 export default GridManager

@@ -1,0 +1,121 @@
+{
+  "preload": {
+    "files": [
+      {
+        "type": "image",
+        "key": "cookie1",
+        "url": "./assets/images/cookie1.png"
+      },
+      {
+        "type": "image",
+        "key": "cookie2",
+        "url": "./assets/images/cookie2.png"
+      },
+      {
+        "type": "image",
+        "key": "croissant",
+        "url": "./assets/images/croissant.png"
+      },
+      {
+        "type": "image",
+        "key": "cupcake",
+        "url": "./assets/images/cupcake.png"
+      },
+      {
+        "type": "image",
+        "key": "donut",
+        "url": "./assets/images/donut.png"
+      },
+      {
+        "type": "image",
+        "key": "eclair",
+        "url": "./assets/images/eclair.png"
+      },
+      {
+        "type": "image",
+        "key": "macaroon",
+        "url": "./assets/images/macaroon.png"
+      },
+      {
+        "type": "image",
+        "key": "pie",
+        "url": "./assets/images/pie.png"
+      },
+      {
+        "type": "image",
+        "key": "poptart1",
+        "url": "./assets/images/poptart1.png"
+      },
+      {
+        "type": "image",
+        "key": "poptart2",
+        "url": "./assets/images/poptart2.png"
+      },
+      {
+        "type": "image",
+        "key": "starcookie1",
+        "url": "./assets/images/starcookie1.png"
+      },
+      {
+        "type": "image",
+        "key": "starcookie2",
+        "url": "./assets/images/starcookie2.png"
+      },
+      {
+        "type": "image",
+        "key": "avocado",
+        "url": "./assets/images/avocado_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "banana",
+        "url": "./assets/images/banana_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "chestnut",
+        "url": "./assets/images/chestnut_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "grapes",
+        "url": "./assets/images/grapes_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "strawberry",
+        "url": "./assets/images/strawberry_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "fire",
+        "url": "./assets/images/fire_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "bolt",
+        "url": "./assets/images/high_voltage_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "star",
+        "url": "./assets/images/star_3d.png"
+      },
+      {
+        "type": "image",
+        "key": "progress-star",
+        "url": "./assets/images/progress-star.png"
+      },
+      {
+        "type": "image",
+        "key": "confetti",
+        "url": "./assets/images/confetti.png"
+      },
+      {
+        "type": "image",
+        "key": "confetti-flipped",
+        "url": "./assets/images/confetti-flipped.png"
+      }
+    ]
+  }
+}
