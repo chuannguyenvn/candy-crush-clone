@@ -60,6 +60,7 @@ class GridManager
         this.stateMachine.configure(GridState.IDLE).onEntry(() => {
             this.resetWakeTimer()
             this.gameScene.scoreManager.resetMultiplier()
+            this.deselectTiles()
         })
         this.stateMachine.configure(GridState.SWAPPING).onEntry(() => {
             this.swapTile()
@@ -101,6 +102,12 @@ class GridManager
         this.stateMachine.changeState(GridState.DROPPING)
     }
 
+    update(): void {
+        console.log('====================')
+        console.log(this.firstSelectedTile)
+        console.log(this.secondSelectedTile)
+    }
+
     private addRandomItem(xIndex: number, yIndex: number): void {
         const randomIndex = Math.floor(Math.random() * this.possibleItemTypes.length)
         const randomItemType = this.possibleItemTypes[randomIndex]
@@ -112,7 +119,7 @@ class GridManager
     }
 
     private moveTile(pointer: any, gameobject: Tile, event: any): void {
-        if (this.stateMachine.currentState == GridState.IDLE)
+        if (this.stateMachine.currentState === GridState.IDLE)
         {
             if (!this.firstSelectedTile)
             {
@@ -177,9 +184,9 @@ class GridManager
     }
 
     private deselectTiles(): void {
-        this.firstSelectedTile?.stopSelectedAnimation()
-        this.secondSelectedTile?.stopSelectedAnimation()
-
+        this.firstSelectedTile?.stopAllAnimation()
+        this.secondSelectedTile?.stopAllAnimation()
+        
         this.firstSelectedTile = null
         this.secondSelectedTile = null
     }
