@@ -136,6 +136,7 @@ class ScoreManager extends Phaser.GameObjects.Container
             })
 
             this.explodeConfetti(this.star1.x, this.star1.y)
+            this.gameScene.gridManager.awaitingShuffle = true
         }
         else if (this.currentScore >= 8000 && this.milestonesReached === 1)
         {
@@ -149,6 +150,7 @@ class ScoreManager extends Phaser.GameObjects.Container
             })
 
             this.explodeConfetti(this.star2.x, this.star2.y)
+            this.gameScene.gridManager.awaitingShuffle = true
         }
         else if (this.currentScore >= 12000 && this.milestonesReached === 2)
         {
@@ -162,6 +164,7 @@ class ScoreManager extends Phaser.GameObjects.Container
             })
 
             this.explodeConfetti(this.star3.x, this.star3.y)
+            this.gameScene.gridManager.awaitingShuffle = true
         }
     }
 

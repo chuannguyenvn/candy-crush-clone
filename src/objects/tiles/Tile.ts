@@ -4,6 +4,7 @@ import { CONST } from '../../const/Const'
 import AnimationFactory from '../AnimationFactory'
 import GridManager from '../GridManager'
 import { GameScene } from '../../scenes/game-scene'
+import FollowTarget from '../FollowTarget'
 
 export abstract class Tile extends Phaser.GameObjects.Container
 {
@@ -20,6 +21,8 @@ export abstract class Tile extends Phaser.GameObjects.Container
     protected tileImage: Phaser.GameObjects.Image
 
     protected gameScene: GameScene
+
+    public followTarget: FollowTarget | null = null
 
     constructor(scene: GameScene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, 0, 0)
@@ -62,7 +65,7 @@ export abstract class Tile extends Phaser.GameObjects.Container
 
         this.gridManager.grid[this.yIndex][this.xIndex] = null
         this.gameScene.scoreManager.addScore(250)
-        
+
         this.scene.tweens.add({
             targets: this,
             scale: 0,
@@ -247,7 +250,26 @@ export abstract class Tile extends Phaser.GameObjects.Container
     }
 
     destroy(fromScene?: boolean) {
-        super.destroy(fromScene)
         this.tileImage.destroy()
+        super.destroy(fromScene)
+    }
+
+    public assignFollowTarget(target: FollowTarget): void {
+        this.followTarget = target
+    }
+
+    public removeFollowTarget(): void {
+        this.followTarget = null
+    }
+
+    public moveToTarget(progress: number): void {
+        if (this.followTarget === null) return
+        this.x = Phaser.Math.Linear(this.x, this.followTarget.x, progress)
+        this.y = Phaser.Math.Linear(this.y, this.followTarget.y, progress)
+    }
+
+    public reassignIndex(xIndex: number, yIndex: number): void {
+        this.xIndex = xIndex
+        this.yIndex = yIndex
     }
 }

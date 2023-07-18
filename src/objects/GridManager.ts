@@ -10,6 +10,7 @@ import NormalTile from './tiles/NormalTile'
 import ExplosionTile from './tiles/ExplosionTile'
 import ClearTile from './tiles/ClearTile'
 import { GameScene } from '../scenes/game-scene'
+import FollowTarget from './FollowTarget'
 import TimerEvent = Phaser.Time.TimerEvent
 
 class GridManager
@@ -36,6 +37,10 @@ class GridManager
     private wakeUpTimer: TimerEvent
 
     public gameScene: GameScene
+
+    public awaitingShuffle = false
+
+    private followTargets: FollowTarget[] = []
 
     constructor(
         scene: GameScene,
@@ -71,9 +76,10 @@ class GridManager
             this.dropAndFill()
         })
         this.stateMachine.configure(GridState.SHUFFLING).onEntry(() => {
+            this.awaitingShuffle = false
             this.shuffle()
         })
-        
+
         this.resetWakeTimer()
         this.initGrid()
     }
@@ -84,7 +90,11 @@ class GridManager
         for (let row = 0; row < this.gridHeight; row++)
         {
             const newRow: (Tile | null)[] = []
-            for (let col = 0; col < this.gridWidth; col++) newRow.push(null)
+            for (let col = 0; col < this.gridWidth; col++)
+            {
+                newRow.push(null)
+                this.followTargets.push(new FollowTarget(this.gameScene))
+            }
             this.grid.push(newRow)
         }
 
@@ -186,7 +196,8 @@ class GridManager
         else
         {
             if (this.matchesClearedThisMove === 0) this.swapTile(true)
-            this.stateMachine.changeState(GridState.IDLE)
+            if (this.awaitingShuffle) this.stateMachine.changeState(GridState.SHUFFLING)
+            else this.stateMachine.changeState(GridState.IDLE)
         }
     }
 
@@ -470,8 +481,65 @@ class GridManager
     }
 
     private shuffle(): void {
-        Phaser.Geom.Circle
-        this.stateMachine.changeState(GridState.CALCULATE)
+        let allTiles: Tile[] = []
+
+        for (let row = 0; row < this.gridHeight; row++)
+        {
+            for (let col = 0; col < this.gridWidth; col++)
+            {
+                const tile = this.grid[row][col] as Tile
+                allTiles.push(tile)
+                tile.assignFollowTarget(this.followTargets[row * 8 + col])
+            }
+        }
+
+        this.followTargets = Utility.shuffleArray(this.followTargets)
+        allTiles = Utility.shuffleArray(allTiles)
+
+        const circle = new Phaser.Geom.Circle(CONST.TILE_HEIGHT * 3.5, CONST.TILE_HEIGHT * 3.5, 200)
+        Phaser.Actions.PlaceOnCircle(this.followTargets, circle)
+
+        this.gameScene.tweens.add({
+            targets: circle,
+            radius: 228,
+            ease: Phaser.Math.Easing.Sine.InOut,
+            duration: 1000,
+            yoyo: true,
+            repeat: 1,
+            onUpdate: (tween) => {
+                Phaser.Actions.RotateAroundDistance(this.followTargets, {
+                    x: CONST.TILE_HEIGHT * 3.5,
+                    y: CONST.TILE_HEIGHT * 3.5,
+                }, 0.02, circle.radius)
+                allTiles.forEach(tile => tile.moveToTarget(tween.progress))
+            },
+            onComplete: () => {
+                for (let row = 0; row < this.gridHeight; row++)
+                {
+                    for (let col = 0; col < this.gridWidth; col++)
+                    {
+                        this.grid[row][col] = allTiles[row * this.gridHeight + col]
+                        allTiles[row * this.gridHeight + col].reassignIndex(col, row);
+                        ((this.grid[row][col] as Tile).followTarget as FollowTarget).x = col * CONST.TILE_WIDTH;
+                        ((this.grid[row][col] as Tile).followTarget as FollowTarget).y = row * CONST.TILE_HEIGHT
+                    }
+                }
+
+                this.gameScene.tweens.addCounter({
+                    from: 0,
+                    to: 1,
+                    duration: 1000,
+                    ease: Phaser.Math.Easing.Sine.InOut,
+                    onUpdate: (tween) => {
+                        allTiles.forEach(tile => tile.moveToTarget(tween.getValue()))
+                    },
+                    onComplete: () => {
+                        allTiles.forEach(tile => tile.removeFollowTarget())
+                        this.stateMachine.changeState(GridState.CALCULATE)
+                    },
+                })
+            },
+        })
     }
 }
 
