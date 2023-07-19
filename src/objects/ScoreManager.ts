@@ -116,8 +116,6 @@ class ScoreManager extends Phaser.GameObjects.Container
         this.star3Background.setOrigin(0.5)
         this.star3Background.setDepth(-1)
         this.star3Background.setDisplaySize(32, 32)
-
-        this.explodeConfetti(100, 100)
     }
 
     public addScore(amount: number): void {

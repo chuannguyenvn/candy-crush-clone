@@ -1,6 +1,7 @@
 ﻿import { Tile } from './Tile'
 import TileParticle from '../TileParticle'
 import Vector2 = Phaser.Math.Vector2
+import Color = Phaser.Display.Color
 
 class NormalTile extends Tile
 {
@@ -13,7 +14,7 @@ class NormalTile extends Tile
             emitting: false,
             particleClass: TileParticle,
         }).explode(Phaser.Math.Between(2, 3)))
-
+        
         this.setDepth(10)
 
         this.scene.cameras.main.shake(50, new Vector2(0.003, 0.003))

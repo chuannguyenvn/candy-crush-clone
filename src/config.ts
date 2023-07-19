@@ -8,6 +8,9 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
     width: 700,
     height: 700,
     type: Phaser.AUTO,
+    scale: {
+        mode: Phaser.Scale.RESIZE,
+    },
     parent: 'game',
     scene: [BootScene, GameScene],
     backgroundColor: '#eeeeee',
