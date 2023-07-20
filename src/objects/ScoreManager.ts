@@ -171,26 +171,26 @@ class ScoreManager extends Phaser.GameObjects.Container
         const tint = hsv.map(entry => entry.color)
 
         this.gameScene.add.particles(xPos, yPos, Keys.Sprite.CONFETTI, {
-            lifespan: 5000,
-            speedX: { min: -50, max: 50 },
-            speedY: { min: -300, max: -600 },
-            gravityY: 200,
+            lifespan: { min: 4000, max: 6000 },
+            // speedX: { min: -150, max: 150 },
+            speedY: { min: -750, max: -2000 },
+            gravityY: 2000,
             scale: { min: 0.1, max: 0.5 },
             tint: tint,
             emitting: true,
             particleClass: ConfettiParticle,
-        }).explode(Phaser.Math.Between(10, 15))
+        }).explode(Phaser.Math.Between(50, 100))
 
         this.gameScene.add.particles(xPos, yPos, Keys.Sprite.CONFETTI_FLIPPED, {
-            lifespan: 5000,
-            speedX: { min: -50, max: 50 },
-            speedY: { min: -300, max: -600 },
-            gravityY: 200,
+            lifespan: { min: 4000, max: 6000 },
+            // speedX: { min: -150, max: 150 },
+            speedY: { min: -750, max: -2000 },
+            gravityY: 2000,
             scale: { min: 0.1, max: 0.5 },
             tint: tint,
             emitting: true,
             particleClass: ConfettiParticle,
-        }).explode(Phaser.Math.Between(10, 15))
+        }).explode(Phaser.Math.Between(50, 100))
     }
 
     public resetMultiplier(): void {
