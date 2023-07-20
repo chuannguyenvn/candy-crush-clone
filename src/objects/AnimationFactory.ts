@@ -12,8 +12,8 @@ class AnimationFactory
     public static readonly TILE_SWAPPING_TIME = 250
     public static readonly TILE_SWAPPING_STRETCHING_SCALE_TARGET = 1.5
     public static readonly TILE_SWAPPING_SQUASHING_SCALE_TARGET = 0.5
-    public static readonly TILE_HINT_STRETCHING_SCALE_TARGET = 1.2
-    public static readonly TILE_HINT_SQUASHING_SCALE_TARGET = 0.8
+    public static readonly TILE_HINT_STRETCHING_SCALE_TARGET = 1.3
+    public static readonly TILE_HINT_SQUASHING_SCALE_TARGET = 0.7
     public static readonly TILE_HINT_TIME = 600
     public static readonly TILE_SELECTING_SQUASHING_CONSTANT = 1.2
     public static readonly TILE_COMBINING_TIME = 800

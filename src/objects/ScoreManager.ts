@@ -119,11 +119,14 @@ class ScoreManager extends Phaser.GameObjects.Container
     }
 
     public addScore(amount: number): void {
+        this.gameScene.playPopSound((this.scoreMultiplier - 1) * 300)
+        
         this.currentScore += amount * this.scoreMultiplier
-        this.scoreMultiplier += 0.25
+        this.scoreMultiplier += 0.1
 
         if (this.currentScore >= 4000 && this.milestonesReached === 0)
         {
+            this.gameScene.cheersSound.play()
             this.star1.setTint(0x444444)
             this.milestonesReached = 1
             this.gameScene.tweens.add({
@@ -138,6 +141,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         }
         else if (this.currentScore >= 8000 && this.milestonesReached === 1)
         {
+            this.gameScene.cheersSound.play()
             this.star2.setTint(0x444444)
             this.milestonesReached = 2
             this.gameScene.tweens.add({
@@ -152,6 +156,7 @@ class ScoreManager extends Phaser.GameObjects.Container
         }
         else if (this.currentScore >= 12000 && this.milestonesReached === 2)
         {
+            this.gameScene.cheersSound.play()
             this.star3.setTint(0x444444)
             this.milestonesReached = 3
             this.gameScene.tweens.add({

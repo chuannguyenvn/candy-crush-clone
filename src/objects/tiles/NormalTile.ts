@@ -22,7 +22,7 @@ class NormalTile extends Tile
         await new Promise<void>((resolve) => {
             setTimeout(() => {
                 resolve()
-            }, 50)
+            }, 100)
         })
     }
 }

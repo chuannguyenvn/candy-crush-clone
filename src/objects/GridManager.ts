@@ -181,6 +181,8 @@ class GridManager
                 this.stateMachine.changeState(GridState.CALCULATE)
             })
         }
+
+        this.gameScene.swapSound.play()
     }
 
     private deselectTiles(): void {
@@ -224,7 +226,7 @@ class GridManager
             {
                 await tile.resolve()
             }
-
+            
             const chosenTile = match.content[2]
             this.gameScene.cameras.main.pan(chosenTile.x, chosenTile.y, 500, Phaser.Math.Easing.Cubic.Out)
             this.gameScene.cameras.main.rotateTo(Math.random() * 0.05, true, 500, Phaser.Math.Easing.Cubic.Out)
@@ -233,6 +235,7 @@ class GridManager
                 setTimeout(() => {
                     const clearTile = new ClearTile(this.gameScene, this, chosenTile.xIndex, chosenTile.yIndex)
                     this.grid[chosenTile.yIndex][chosenTile.xIndex] = clearTile
+                    this.gameScene.starSound.play()
                     setTimeout(() => {
                         this.gameScene.cameras.main.pan(CONST.TILE_WIDTH * 3.5, CONST.TILE_HEIGHT * 4, 500, Phaser.Math.Easing.Cubic.Out)
                         this.gameScene.cameras.main.rotateTo(0, true, 500, Phaser.Math.Easing.Cubic.Out)
@@ -243,6 +246,7 @@ class GridManager
                     }, 500)
                 }, 500)
             })
+            
         }
 
         for (const match of this.resolveResult.matchesOfFiveAngled)

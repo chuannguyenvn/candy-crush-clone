@@ -93,6 +93,7 @@ export abstract class Tile extends Phaser.GameObjects.Container
 
     public playSelectedAnimation(): void {
         this.stopAllAnimation()
+        this.gameScene.chooseSound.play()
         this.selectedAnimation = this.scene.tweens.chain({
             targets: this,
             tweens: [
@@ -206,10 +207,13 @@ export abstract class Tile extends Phaser.GameObjects.Container
                     scaleY: yOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
                     duration: AnimationFactory.TILE_HINT_TIME / 4,
                     ease: Phaser.Math.Easing.Quintic.Out,
+                    delay: 100,
+                    onStart: () => this.gameScene.squeakySound.play(),
                 },
                 {
                     scaleX: 1,
                     scaleY: 1,
+                    delay: 50,
                     duration: AnimationFactory.TILE_HINT_TIME / 4,
                     ease: Phaser.Math.Easing.Quintic.Out,
                 },
@@ -218,10 +222,13 @@ export abstract class Tile extends Phaser.GameObjects.Container
                     scaleY: yOffset !== 0 ? AnimationFactory.TILE_HINT_SQUASHING_SCALE_TARGET : AnimationFactory.TILE_HINT_STRETCHING_SCALE_TARGET,
                     duration: AnimationFactory.TILE_HINT_TIME / 4,
                     ease: Phaser.Math.Easing.Quintic.Out,
+                    delay: 100,
+                    onStart: () => this.gameScene.squeakySound.play(),
                 },
                 {
                     scaleX: 1,
                     scaleY: 1,
+                    delay: 50,
                     duration: AnimationFactory.TILE_HINT_TIME / 4,
                     ease: Phaser.Math.Easing.Quintic.Out,
                 },
