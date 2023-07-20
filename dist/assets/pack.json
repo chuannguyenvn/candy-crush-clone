@@ -115,6 +115,36 @@
         "type": "image",
         "key": "confetti-flipped",
         "url": "./assets/images/confetti-flipped.png"
+      },
+      {
+        "type": "audio",
+        "key": "squeak",
+        "url": "./assets/sounds/squeaky-toy.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "pop",
+        "url": "./assets/sounds/pop.wav"
+      },
+      {
+        "type": "audio",
+        "key": "swap",
+        "url": "./assets/sounds/swap.wav"
+      },
+      {
+        "type": "audio",
+        "key": "cheers",
+        "url": "./assets/sounds/cheers.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "star",
+        "url": "./assets/sounds/star.mp3"
+      },
+      {
+        "type": "audio",
+        "key": "choose",
+        "url": "./assets/sounds/choose.wav"
       }
     ]
   }
