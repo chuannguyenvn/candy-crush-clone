@@ -122,7 +122,8 @@ class ScoreManager extends Phaser.GameObjects.Container
         this.gameScene.playPopSound((this.scoreMultiplier - 1) * 300)
         
         this.currentScore += amount * this.scoreMultiplier
-        this.scoreMultiplier += 0.1
+        this.scoreMultiplier += 0.05
+        this.scoreMultiplier = Phaser.Math.Clamp(this.scoreMultiplier, 1, 3)
 
         if (this.currentScore >= 4000 && this.milestonesReached === 0)
         {

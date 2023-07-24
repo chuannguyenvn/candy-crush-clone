@@ -13,6 +13,10 @@ class ExplosionTile extends Tile
 
         this.fireImage = this.scene.add.image(0, 0, Keys.Sprite.FIRE)
         this.add(this.fireImage)
+        
+        scene.tweens.add({
+            targets:this.fireImage
+        })
     }
 
     public override async resolve(): Promise<void> {
