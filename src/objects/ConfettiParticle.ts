@@ -8,6 +8,8 @@ class ConfettiParticle extends Phaser.GameObjects.Particles.Particle
     private startAngle: number
     private targetAngle: number
 
+    private randomMaxVelocityY: number
+
     constructor(emitter: ParticleEmitter) {
         super(emitter)
 
@@ -19,6 +21,8 @@ class ConfettiParticle extends Phaser.GameObjects.Particles.Particle
             this.velocityX = rotatedVelocity.x
             this.velocityY = rotatedVelocity.y
         })
+
+        this.randomMaxVelocityY = Phaser.Math.Between(10, 50)
     }
 
     update(delta: number, step: number, processors: Phaser.GameObjects.Particles.ParticleProcessor[]): boolean {
@@ -30,8 +34,9 @@ class ConfettiParticle extends Phaser.GameObjects.Particles.Particle
         else
         {
             this.velocityX *= 0.9
-            this.velocityY *= 0.3
-
+            this.velocityY *= 0.9
+            this.velocityY = Phaser.Math.Clamp(this.velocityY, 0, this.randomMaxVelocityY)
+            
             const progress = Phaser.Math.Clamp(Maths.inverseLerp(3000, 0, this.lifeCurrent), 0, 1)
             this.alpha = Phaser.Math.Linear(1, 0, Phaser.Math.Easing.Quartic.In(progress))
         }
