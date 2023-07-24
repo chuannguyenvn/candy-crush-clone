@@ -1,8 +1,8 @@
 ﻿import { Tile } from './Tile'
-import { Scene } from 'phaser'
 import GridManager from '../GridManager'
 import Keys from '../../const/Keys'
 import { GameScene } from '../../scenes/game-scene'
+import { CONST } from '../../const/Const'
 
 class ExplosionTile extends Tile
 {
@@ -11,11 +11,43 @@ class ExplosionTile extends Tile
     constructor(scene: GameScene, gridManager: GridManager, xIndex: number, yIndex: number, spriteKey: string) {
         super(scene, gridManager, xIndex, yIndex, spriteKey)
 
-        this.fireImage = this.scene.add.image(0, 0, Keys.Sprite.FIRE)
+        this.fireImage = this.scene.add.image(0, CONST.TILE_HEIGHT / 2, Keys.Sprite.FIRE)
         this.add(this.fireImage)
-        
-        scene.tweens.add({
-            targets:this.fireImage
+        this.fireImage.setOrigin(0.5, 1)
+
+        scene.tweens.chain({
+            targets: this.fireImage,
+            repeat: -1,
+            tweens: [
+                {
+                    scaleY: 0.8,
+                    duration: 500,
+                    ease: Phaser.Math.Easing.Sine.Out,
+                },
+                {
+                    scaleY: 0.6,
+                    duration: 500,
+                    ease: Phaser.Math.Easing.Sine.Out,
+                },
+            ],
+        })
+        scene.tweens.chain({
+            targets: this.fireImage,
+            repeat: -1,
+            delay:100,
+            tweens: [
+                {
+                    scaleX: 0.6,
+                    duration: 500,
+                    ease: Phaser.Math.Easing.Sine.Out,
+                },
+                {
+                    scaleX: 0.8,
+                    duration: 500,
+                    ease: Phaser.Math.Easing.Sine.Out,
+                },
+              
+            ],
         })
     }
 
