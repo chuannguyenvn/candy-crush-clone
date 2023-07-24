@@ -129,18 +129,13 @@ export abstract class Tile extends Phaser.GameObjects.Container
             targets: this,
             tweens: [
                 {
-                    scale: AnimationFactory.TILE_SELECTING_SQUASHING_CONSTANT,
-                    duration: 50,
-                    ease: Phaser.Math.Easing.Circular.Out,
-                },
-                {
                     scale: 1,
                     duration: 50,
                     ease: Phaser.Math.Easing.Circular.Out,
                 },
                 {
                     angle: 0,
-                    duration: 500,
+                    duration: 100,
                     ease: Phaser.Math.Easing.Circular.InOut,
                 },
             ],

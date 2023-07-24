@@ -75,7 +75,7 @@ class AnimationFactory
         }
 
         const swapBackDelay = swapBack ? 100 : 0
-
+        
         tweens.push(
             this.scene.tweens.add({
                 targets: aTile,
@@ -106,6 +106,7 @@ class AnimationFactory
                 ease: Phaser.Math.Easing.Sine.InOut,
                 duration: AnimationFactory.TILE_SWAPPING_TIME / 2,
                 delay: AnimationFactory.TILE_SWAPPING_TIME / 2 + swapBackDelay,
+                onComplete: () => aTile.stopSelectedAnimation()
             }),
         )
 
@@ -139,6 +140,7 @@ class AnimationFactory
                 ease: Phaser.Math.Easing.Sine.InOut,
                 duration: AnimationFactory.TILE_SWAPPING_TIME / 2,
                 delay: AnimationFactory.TILE_SWAPPING_TIME / 2 + swapBackDelay,
+                onComplete: () => bTile.stopSelectedAnimation()
             }),
         )
 
