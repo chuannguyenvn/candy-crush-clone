@@ -1,12 +1,10 @@
 import TweenChain = Phaser.Tweens.TweenChain
 import Tween = Phaser.Tweens.Tween
-import Color = Phaser.Display.Color
 import { CONST } from '../../const/Const'
 import AnimationFactory from '../AnimationFactory'
 import GridManager from '../GridManager'
 import { GameScene } from '../../scenes/game-scene'
 import FollowTarget from '../FollowTarget'
-import { BlendModes } from 'phaser'
 
 export abstract class Tile extends Phaser.GameObjects.Container
 {
@@ -68,25 +66,25 @@ export abstract class Tile extends Phaser.GameObjects.Container
         this.gridManager.grid[this.yIndex][this.xIndex] = null
         this.gameScene.scoreManager.addScore(100)
 
-        this.tileImage.setBlendMode(BlendModes.ADD)
-        this.scene.tweens.addCounter({
-            from: 255, to: 0, duration: 500, onUpdate: (tween) => {
-                this.tileImage.setTint(new Color(tween.getValue(), tween.getValue(), tween.getValue(), 255).color)
-            },
-        })
+        // this.tileImage.setBlendMode(BlendModes.ADD)
+        // this.scene.tweens.addCounter({
+        //     from: 255, to: 0, duration: 500, onUpdate: (tween) => {
+        //         this.tileImage.setTint(new Color(tween.getValue(), tween.getValue(), tween.getValue(), 255).color)
+        //     },
+        // })
 
         this.scene.tweens.add({
             targets: this,
             scale: 0,
             duration: 250,
-            ease: Phaser.Math.Easing.Back.In,
+            ease: (x: number) => Phaser.Math.Easing.Back.In(x, 2.5),
         })
 
         this.scene.tweens.add({
             targets: this.tileImage,
             scale: 0,
             duration: 250,
-            ease: Phaser.Math.Easing.Back.In,
+            ease: (x: number) => Phaser.Math.Easing.Back.In(x, 2.5),
             onComplete: () => this.tileImage.destroy(),
         })
     }
