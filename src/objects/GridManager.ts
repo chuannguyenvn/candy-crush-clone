@@ -230,7 +230,7 @@ class GridManager
             const chosenTile = match.content[2]
             this.gameScene.cameras.main.pan(chosenTile.x, chosenTile.y, 500, Phaser.Math.Easing.Cubic.Out)
             this.gameScene.cameras.main.rotateTo(Math.random() * 0.05, true, 500, Phaser.Math.Easing.Cubic.Out)
-            this.gameScene.cameras.main.zoomTo(1.5, 500, Phaser.Math.Easing.Cubic.Out)
+            this.gameScene.cameras.main.zoomTo(2, 500, Phaser.Math.Easing.Cubic.Out)
             await new Promise<void>((resolve, reject) => {
                 setTimeout(() => {
                     const clearTile = new ClearTile(this.gameScene, this, chosenTile.xIndex, chosenTile.yIndex)
